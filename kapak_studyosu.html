@@ -15,7 +15,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800;900&family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js"></script>
 <style>
   :root { color-scheme: dark; }
   * { box-sizing: border-box; }
@@ -130,7 +129,7 @@
     <button data-v="vurgu">Kısa vurgu</button>
     <button data-v="liste">Liste</button>
     <button data-v="karsilastirma">Karşılaştırma</button>
-    <button data-v="gundem">Gündem (haritasız)</button>
+    <button data-v="gundem">Gündem</button>
   </div>
 
   <label>Başlık</label>
@@ -151,28 +150,28 @@
   <label>Ölçüt satırı (karşılaştırma)</label>
   <input type="text" id="alt" placeholder="Ulaşım, kira ve yeşil alan karşılaştırması">
 
-  <label>Uydu haritası</label>
+  <label>Görsel / uydu haritası</label>
   <div class="drop" id="dropMap">Sürükle-bırak veya tıkla</div>
   <div class="tset" id="tsetHarita" data-k="harita">
-    <div class="r"><span>Yakın</span><input type="range" data-a="z" min="1" max="3" step=".02" value="1"><b>1.00×</b></div>
-    <div class="r"><span>Yatay</span><input type="range" data-a="x" min="-50" max="50" step=".5" value="0"><b>0%</b></div>
-    <div class="r"><span>Dikey</span><input type="range" data-a="y" min="-50" max="50" step=".5" value="0"><b>0%</b></div>
+    <div class="r"><span>Yakın</span><input type="range" data-a="z" min="1" max="4" step=".02" value="1"><b>1.00×</b></div>
+    <div class="r"><span>Yatay</span><input type="range" data-a="x" min="-100" max="100" step=".5" value="0"><b>0%</b></div>
+    <div class="r"><span>Dikey</span><input type="range" data-a="y" min="-100" max="100" step=".5" value="0"><b>0%</b></div>
     <button data-reset="1">Sıfırla</button>
   </div>
   <label>Bölge maskesi (şeffaf PNG)</label>
   <div class="drop" id="dropMask">Sürükle-bırak veya tıkla</div>
   <div class="tset" id="tsetMaske" data-k="maske">
-    <div class="r"><span>Yakın</span><input type="range" data-a="z" min="1" max="3" step=".02" value="1"><b>1.00×</b></div>
-    <div class="r"><span>Yatay</span><input type="range" data-a="x" min="-50" max="50" step=".5" value="0"><b>0%</b></div>
-    <div class="r"><span>Dikey</span><input type="range" data-a="y" min="-50" max="50" step=".5" value="0"><b>0%</b></div>
+    <div class="r"><span>Yakın</span><input type="range" data-a="z" min="1" max="4" step=".02" value="1"><b>1.00×</b></div>
+    <div class="r"><span>Yatay</span><input type="range" data-a="x" min="-100" max="100" step=".5" value="0"><b>0%</b></div>
+    <div class="r"><span>Dikey</span><input type="range" data-a="y" min="-100" max="100" step=".5" value="0"><b>0%</b></div>
     <button data-reset="1">Sıfırla</button>
   </div>
-  <label>2. harita (karşılaştırma)</label>
+  <label>2. görsel (karşılaştırma)</label>
   <div class="drop" id="dropMap2">Sürükle-bırak veya tıkla</div>
   <div class="tset" id="tsetHarita2" data-k="harita2">
-    <div class="r"><span>Yakın</span><input type="range" data-a="z" min="1" max="3" step=".02" value="1"><b>1.00×</b></div>
-    <div class="r"><span>Yatay</span><input type="range" data-a="x" min="-50" max="50" step=".5" value="0"><b>0%</b></div>
-    <div class="r"><span>Dikey</span><input type="range" data-a="y" min="-50" max="50" step=".5" value="0"><b>0%</b></div>
+    <div class="r"><span>Yakın</span><input type="range" data-a="z" min="1" max="4" step=".02" value="1"><b>1.00×</b></div>
+    <div class="r"><span>Yatay</span><input type="range" data-a="x" min="-100" max="100" step=".5" value="0"><b>0%</b></div>
+    <div class="r"><span>Dikey</span><input type="range" data-a="y" min="-100" max="100" step=".5" value="0"><b>0%</b></div>
     <button data-reset="1">Sıfırla</button>
   </div>
 
@@ -184,7 +183,7 @@
 
   <button id="dl">PNG indir</button>
   <div id="note">Kılavuzlar açıkken indirme de çerçeveli olur — yayına gidecek kapakta kapat.<br>
-  Görseli önizlemede parmakla/fareyle sürükleyerek de kaydırabilirsin.</div>
+  Görseli önizlemede tek parmakla kaydır, iki parmakla yakınlaştır (masaüstünde sürükle / tekerlek).</div>
 
   <div id="a2hs">
     <b>Uygulama gibi kullan:</b> alttaki <b>Paylaş</b> simgesine bas → <b>Ana Ekrana Ekle</b>.
@@ -236,16 +235,21 @@ const FORMATS = {
 
 const el = (t, s, x) => { const n = document.createElement(t); if (s) n.setAttribute("style", s); if (x != null) n.textContent = x; return n; };
 
+/* Türkçe büyük harf + tek ölçüm kaynağı: önizleme ile indirilen PNG aynı satırları verir */
+const UP = s => String(s == null ? "" : s).toLocaleUpperCase("tr");
+const MEAS = document.createElement("canvas").getContext("2d");
+const measure = (family, weight, size, text) => {
+  MEAS.font = `${weight} ${size}px ${family}`;
+  return MEAS.measureText(UP(text)).width;
+};
+
 function layoutTitle(box, text, accentPhrase, opts) {
   const maxW = box.w - box.left - box.right;
   const words = String(text || "").trim().split(/\s+/).filter(Boolean);
   const accentWords = (accentPhrase || "").trim().toLocaleLowerCase("tr").split(/\s+/).filter(Boolean);
   if (!words.length) return { size: opts.min, lines: [], accentWords };
   for (let size = opts.max; size >= opts.min; size -= 2) {
-    const probe = el("div", `position:absolute;visibility:hidden;white-space:nowrap;font-family:${opts.family};`
-      + `font-size:${size}px;font-weight:${opts.weight};text-transform:uppercase`);
-    document.body.appendChild(probe);
-    const width = w => { probe.textContent = w; return probe.getBoundingClientRect().width; };
+    const width = w => measure(opts.family, opts.weight, size, w);
     const lines = []; let cur = "", ok = true;
     for (const w of words) {
       const cand = cur ? cur + " " + w : w;
@@ -254,7 +258,6 @@ function layoutTitle(box, text, accentPhrase, opts) {
       else { lines.push(cur); cur = w; }
     }
     if (cur) lines.push(cur);
-    probe.remove();
     if (ok && lines.length <= opts.maxLines && lines.length * size * 1.04 <= box.height) return { size, lines, accentWords };
   }
   return { size: opts.min, lines: [String(text)], accentWords };
@@ -371,6 +374,11 @@ function build(d) {
   const tbox = { w:G.w, left:G.side, right:G.side + 14, bottom:G.titleBottom, height:G.titleH };
 
   if (d.yerlesim === "gundem") {
+    /* gündemde de arka plan görseli kullanılabilir — verilmezse düz palet + çizgi dokusu */
+    if (d.harita) {
+      cover.appendChild(reg(img(d.harita, `top:0;left:0;width:${G.w}px;height:${G.h}px`, "harita"), "harita", G.w, G.h));
+      cover.appendChild(scrim("rgba(6,14,26,.62) 0%, rgba(6,14,26,.42) 38%, rgba(6,14,26,.74) 70%, rgba(6,14,26,.95) 100%"));
+    }
     cover.appendChild(el("div", "position:absolute;inset:0;background:repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 2px, transparent 2px 108px)"));
     cover.appendChild(el("div", `position:absolute;top:0;left:0;right:0;height:14px;background:${p.accent}`));
     cover.appendChild(brackets(G));
@@ -602,13 +610,18 @@ Object.keys(TSETS).forEach(key => {
   });
 });
 
-/* önizlemede sürükleyerek kaydırma — hangi görselin üzerindeysen o kayar */
+/* ---------------- parmak hareketleri: tek parmak kaydırır, iki parmak yakınlaştırır ---------------- */
 (() => {
   const frame = $("frame");
-  let drag = null;
-  const hit = ev => {
+  const pts = new Map();
+  let g = null;
+
+  const geo = () => {
     const G = FORMATS[state.format], r = frame.getBoundingClientRect();
-    const y = (ev.clientY - r.top) / r.height * G.h;
+    return { G, r, s: r.width / G.w };
+  };
+  const toCover = (ev, gz) => ({ x: (ev.clientX - gz.r.left) / gz.s, y: (ev.clientY - gz.r.top) / gz.s });
+  const hit = y => {
     const order = state.yerlesim === "karsilastirma" ? ["harita2", "harita"] : ["maske", "harita"];
     for (const k of order) {
       const b = BOXES[k];
@@ -616,25 +629,81 @@ Object.keys(TSETS).forEach(key => {
     }
     return null;
   };
+  const snapshot = () => {
+    const gz = geo();
+    const ps = [...pts.values()].map(ev => toCover(ev, gz));
+    if (!ps.length) { g = null; return; }
+    const key = hit(ps[0].y) || (ps[1] ? hit(ps[1].y) : null);
+    if (!key) { g = null; return; }
+    const mid = ps.length > 1 ? { x:(ps[0].x + ps[1].x) / 2, y:(ps[0].y + ps[1].y) / 2 } : ps[0];
+    const dist = ps.length > 1 ? Math.hypot(ps[0].x - ps[1].x, ps[0].y - ps[1].y) : 0;
+    g = { key, mid, dist, n: ps.length, t: Object.assign({}, TR[key]) };
+  };
+
   frame.addEventListener("pointerdown", ev => {
-    const key = hit(ev); if (!key) return;
-    const G = FORMATS[state.format], r = frame.getBoundingClientRect();
-    drag = { key, x: ev.clientX, y: ev.clientY, s: r.width / G.w, t: Object.assign({}, TR[key]) };
-    frame.classList.add("drag"); frame.setPointerCapture(ev.pointerId);
+    pts.set(ev.pointerId, ev);
+    snapshot();
+    if (g) { frame.classList.add("drag"); try { frame.setPointerCapture(ev.pointerId); } catch (e) {} }
   });
+
   frame.addEventListener("pointermove", ev => {
-    if (!drag) return;
+    if (!pts.has(ev.pointerId)) return;
+    pts.set(ev.pointerId, ev);
+    if (!g) return;
     ev.preventDefault();
-    const b = BOXES[drag.key], t = TR[drag.key];
-    t.x = clamp(drag.t.x + (ev.clientX - drag.x) / drag.s / (b.w * drag.t.z) * 100, -50, 50);
-    t.y = clamp(drag.t.y + (ev.clientY - drag.y) / drag.s / (b.h * drag.t.z) * 100, -50, 50);
-    syncTset(drag.key); render();
+    const gz = geo();
+    const ps = [...pts.values()].map(p => toCover(p, gz));
+    const mid = ps.length > 1 ? { x:(ps[0].x + ps[1].x) / 2, y:(ps[0].y + ps[1].y) / 2 } : ps[0];
+    const dist = ps.length > 1 ? Math.hypot(ps[0].x - ps[1].x, ps[0].y - ps[1].y) : 0;
+    const b = BOXES[g.key], t = TR[g.key];
+    if (!b) return;
+
+    /* iki parmak: mesafe oranı kadar yakınlaştır, parmakların ortasındaki nokta yerinde kalsın */
+    let z = g.t.z;
+    if (g.n > 1 && g.dist > 8 && dist > 8) z = clamp(g.t.z * (dist / g.dist), 1, 4);
+    const bcx = b.left + b.w / 2, bcy = b.top + b.h / 2;
+    let x = g.t.x + (g.t.z - z) * (g.mid.x - bcx) / b.w * 100;
+    let y = g.t.y + (g.t.z - z) * (g.mid.y - bcy) / b.h * 100;
+    /* kaydırma: parmağın gittiği kadar (ölçek öncesi öteleme olduğu için z'ye bölünmez) */
+    x += (mid.x - g.mid.x) / b.w * 100;
+    y += (mid.y - g.mid.y) / b.h * 100;
+    const lim = Math.max(50, (z - 1) * 60);
+    t.z = z;
+    t.x = clamp(x, -lim, lim);
+    t.y = clamp(y, -lim, lim);
+    syncTset(g.key);
+    render();
   });
-  const end = () => { if (drag) { drag = null; frame.classList.remove("drag"); } };
-  frame.addEventListener("pointerup", end);
-  frame.addEventListener("pointercancel", end);
+
+  const drop = ev => {
+    pts.delete(ev.pointerId);
+    if (!pts.size) { g = null; frame.classList.remove("drag"); }
+    else snapshot();
+  };
+  frame.addEventListener("pointerup", drop);
+  frame.addEventListener("pointercancel", drop);
+
+  /* masaüstü: fare tekerleği / trackpad pinch */
+  frame.addEventListener("wheel", ev => {
+    const gz = geo(), p = toCover(ev, gz), key = hit(p.y);
+    if (!key || !BOXES[key]) return;
+    ev.preventDefault();
+    const b = BOXES[key], t = TR[key];
+    const z0 = t.z, z = clamp(z0 * (1 - ev.deltaY / 400), 1, 4);
+    const bcx = b.left + b.w / 2, bcy = b.top + b.h / 2;
+    const lim = Math.max(50, (z - 1) * 60);
+    t.z = z;
+    t.x = clamp(t.x + (z0 - z) * (p.x - bcx) / b.w * 100, -lim, lim);
+    t.y = clamp(t.y + (z0 - z) * (p.y - bcy) / b.h * 100, -lim, lim);
+    syncTset(key);
+    render();
+  }, { passive: false });
 })();
 
+/* ---------------- PNG üretimi: tamamı canvas ile çizilir ----------------
+   HTML→PNG dönüştürücüsü kullanılmıyordu artık: gömülü görselleri atlıyor,
+   fontları gömemeyince serif'e düşüp yazıları taşırıyordu. Aynı geometri,
+   aynı ölçüm kaynağı (measure) → indirilen PNG önizlemenin birebir aynısı. */
 const loadImg = src => new Promise((res, rej) => {
   const im = new Image();
   im.onload = () => res(im);
@@ -642,9 +711,6 @@ const loadImg = src => new Promise((res, rej) => {
   im.src = src;
 });
 
-/* Fotoğraf katmanlarını canvas'a kendimiz çiziyoruz: HTML→PNG dönüştürücüsü
-   gömmüş görselleri (data URI) bazı tarayıcılarda sessizce atlıyor.
-   Çizim matematiği önizlemedekiyle aynı: cover/contain oturtma + translate(x%,y%) scale(z). */
 async function paintLayer(cx, key, src, fitMode, alpha) {
   const b = BOXES[key]; if (!b) return;
   const im = await loadImg(src);
@@ -661,51 +727,238 @@ async function paintLayer(cx, key, src, fitMode, alpha) {
   cx.restore();
 }
 
-$("dl").addEventListener("click", async () => {
-  const btn = $("dl"), G = FORMATS[state.format], cover = $("cover"), frame = $("frame");
-  btn.disabled = true; btn.textContent = "Hazırlanıyor…";
-  const prevT = cover.style.transform, prevW = frame.style.width, prevH = frame.style.height;
-  const prevBg = cover.style.background;
-  cover.style.transform = "none";
-  frame.style.width = G.w + "px"; frame.style.height = G.h + "px";
-  const slug = ($("baslik").value || "kapak").toLowerCase()
-    .replace(/[^a-z0-9çğıöşü ]/gi, "").trim().replace(/\s+/g, "-").slice(0, 48) || "kapak";
-  const name = `${slug}-${state.format}.png`;
-  const panel = (PALETTES[kat.value] || PALETTES.deger).panel;
-  try {
-    /* metin/çizgi/gradyıan katmanı şeffaf zeminle yakalanır, altına fotoğraflar girer */
-    cover.style.background = "transparent";
-    const opts = { width: G.w, height: G.h, pixelRatio: 1, cacheBust: true, backgroundColor: null };
-    /* iOS Safari ilk dönüştürmede boş/eksik kare verebiliyor — 3 tur ısıtma */
-    let blob = null;
-    for (let i = 0; i < 3; i++) blob = await htmlToImage.toBlob(cover, opts);
-    cover.style.background = prevBg;
+const setFont = (cx, family, weight, size, lsEm) => {
+  cx.font = weight + " " + size + "px " + family + ", sans-serif";
+  if ("letterSpacing" in cx) cx.letterSpacing = ((lsEm || 0) * size).toFixed(2) + "px";
+};
+const shadowOn = (cx, blur, oy, color) => { cx.shadowColor = color; cx.shadowBlur = blur; cx.shadowOffsetY = oy; };
+const shadowOff = cx => { cx.shadowColor = "transparent"; cx.shadowBlur = 0; cx.shadowOffsetY = 0; };
+const vgrad = (cx, G, stops) => {
+  const gr = cx.createLinearGradient(0, 0, 0, G.h);
+  stops.forEach(st => gr.addColorStop(st[0], st[1]));
+  return gr;
+};
+const roundRect = (cx, x, y, w, h, r) => {
+  cx.beginPath();
+  cx.moveTo(x + r, y);
+  cx.arcTo(x + w, y, x + w, y + h, r);
+  cx.arcTo(x + w, y + h, x, y + h, r);
+  cx.arcTo(x, y + h, x, y, r);
+  cx.arcTo(x, y, x + w, y, r);
+  cx.closePath();
+};
 
-    const cv = document.createElement("canvas");
-    cv.width = G.w; cv.height = G.h;
-    const cx = cv.getContext("2d");
-    cx.fillStyle = panel; cx.fillRect(0, 0, G.w, G.h);
+async function paintCover(cx, G, p, d) {
+  const low = s => String(s).toLocaleLowerCase("tr");
+  cx.textAlign = "left"; cx.textBaseline = "alphabetic";
+  cx.fillStyle = p.panel; cx.fillRect(0, 0, G.w, G.h);
 
-    if (state.harita)  await paintLayer(cx, "harita", state.harita, "cover", 1);
-    if (state.harita2) await paintLayer(cx, "harita2", state.harita2, "cover", 1);
-    if (state.maske)   await paintLayer(cx, "maske", state.maske, "contain", 0.68);
+  const brackets_ = () => {
+    cx.fillStyle = "rgba(255,255,255,.85)";
+    const arm = 372 * (G.w / 1080), leg = 186 * (G.h / 1920);
+    cx.fillRect(68, G.brTop, arm, 3);
+    cx.fillRect(68, G.brTop, 3, leg);
+    cx.fillRect(G.w - 68 - arm, G.h - G.brBottom - 3, arm, 3);
+    cx.fillRect(G.w - 68 - 3, G.h - G.brBottom - leg, 3, leg);
+  };
 
-    const url0 = URL.createObjectURL(blob);
-    try {
-      const base = await loadImg(url0);
-      cx.drawImage(base, 0, 0, G.w, G.h);
-    } finally { URL.revokeObjectURL(url0); }
-
-    /* logo: dönüştürücü atlayabildiği için ayrıca basılıyor */
+  const logo_ = async () => {
     try {
       const lg = await loadImg(LOGO);
       const lw = G.logo * (lg.naturalWidth / lg.naturalHeight);
       cx.drawImage(lg, G.w - G.side - lw, G.headerTop, lw, G.logo);
     } catch (e) {}
+  };
 
+  const handle_ = weight => {
+    setFont(cx, "Montserrat", weight, 28, .16);
+    cx.fillStyle = "rgba(255,255,255,.8)";
+    cx.fillText(d.hesap || "@metrekareplus", G.side, G.h - G.handleBottom - 7);
+  };
+
+  const title_ = (dd, box, opts) => {
+    const t = layoutTitle(box, dd.baslik, dd.vurgu, opts);
+    if (!t.lines.length) return;
+    const H = t.lines.length * t.size * 1.04;
+    const top = (G.h - box.bottom) - H;
+    setFont(cx, opts.family, opts.weight, t.size, 0);
+    const phrase = (dd.vurgu || "").trim();
+    t.lines.forEach((line, i) => {
+      const baseY = top + i * t.size * 1.04 + t.size * 0.84;
+      let x = box.left;
+      const seg = (txt, on) => {
+        if (!txt) return;
+        const u = UP(txt);
+        cx.fillStyle = on ? p.accent : "#fff";
+        shadowOn(cx, 26, 6, "rgba(0,0,0,.78)");
+        cx.fillText(u, x, baseY);
+        shadowOff(cx);
+        x += cx.measureText(u).width;
+      };
+      const idx = phrase ? low(line).indexOf(low(phrase)) : -1;
+      if (idx >= 0) {
+        seg(line.slice(0, idx), false);
+        seg(line.slice(idx, idx + phrase.length), true);
+        seg(line.slice(idx + phrase.length), false);
+      } else if (phrase && t.accentWords.length) {
+        line.split(/(\s+)/).forEach(part => {
+          seg(part, /\S/.test(part) && t.accentWords.includes(low(part).replace(/[?.,:;!"']/g, "")));
+        });
+      } else seg(line, false);
+    });
+  };
+
+  const guides_ = () => {
+    if (G.safeBottom) {
+      cx.fillStyle = "rgba(255,201,60,.07)";
+      cx.fillRect(0, G.h - G.safeBottom, G.w, G.safeBottom);
+      cx.strokeStyle = "rgba(255,201,60,.75)"; cx.lineWidth = 2; cx.setLineDash([12, 10]);
+      cx.beginPath(); cx.moveTo(0, G.h - G.safeBottom); cx.lineTo(G.w, G.h - G.safeBottom); cx.stroke();
+      cx.setLineDash([]);
+      setFont(cx, "Montserrat", 700, 24, .14);
+      cx.fillStyle = "rgba(255,201,60,.92)";
+      cx.fillText("ALT %20 — PLATFORM ARAYÜZÜ", G.side, G.h - G.safeBottom + 46);
+    }
+    if (G.h > G.w) {
+      [[1.25, "rgba(127,209,255,.85)", "IZGARA 4:5"], [1, "rgba(255,154,139,.9)", "IZGARA 1:1"]].forEach(w => {
+        const hh = Math.round(G.w * w[0]), top = Math.round((G.h - hh) / 2);
+        cx.strokeStyle = w[1]; cx.lineWidth = 2; cx.setLineDash([12, 10]);
+        cx.strokeRect(1, top, G.w - 2, hh); cx.setLineDash([]);
+        setFont(cx, "Montserrat", 700, 22, .14);
+        cx.fillStyle = w[1]; cx.textAlign = "right";
+        cx.fillText(w[2], G.w - G.side, top + 36);
+        cx.textAlign = "left";
+      });
+    }
+  };
+
+  const mont = { family:"Montserrat", weight:900, max:G.titleMax, min:G.titleMin, maxLines:3 };
+  const osw  = { family:"Oswald", weight:600, max:G.oswMax, min:G.oswMin, maxLines:3 };
+  const tbox = { w:G.w, left:G.side, right:G.side + 14, bottom:G.titleBottom, height:G.titleH };
+
+  if (d.yerlesim === "gundem") {
+    if (d.harita) {
+      await paintLayer(cx, "harita", d.harita, "cover", 1);
+      cx.fillStyle = vgrad(cx, G, [[0, "rgba(6,14,26,.62)"], [.38, "rgba(6,14,26,.42)"],
+        [.7, "rgba(6,14,26,.74)"], [1, "rgba(6,14,26,.95)"]]);
+      cx.fillRect(0, 0, G.w, G.h);
+    }
+    cx.fillStyle = "rgba(255,255,255,.05)";
+    for (let x = 0; x < G.w; x += 108) cx.fillRect(x, 0, 2, G.h);
+    cx.fillStyle = p.accent; cx.fillRect(0, 0, G.w, 14);
+    brackets_();
+    await logo_();
+    if (d.kicker) {
+      setFont(cx, "Oswald", 300, G.kicker, .14);
+      cx.fillStyle = "rgba(255,255,255,.72)";
+      cx.fillText(UP(d.kicker), G.side + 16, G.h - (G.titleBottom + G.titleH) - G.kicker * 0.22);
+    }
+    title_(d, Object.assign({}, tbox, { left:G.side + 16, right:G.side + 16 }), osw);
+    handle_(400);
+    if (d.kilavuz) guides_();
+    return;
+  }
+
+  if (d.yerlesim === "karsilastirma") {
+    const half = Math.round((G.h - G.safeBottom) / 2);
+    if (d.harita) await paintLayer(cx, "harita", d.harita, "cover", 1);
+    if (d.harita2) await paintLayer(cx, "harita2", d.harita2, "cover", 1);
+    const g1 = cx.createLinearGradient(0, 0, 0, half);
+    [[0, "rgba(6,14,26,.74)"], [.45, "rgba(6,14,26,.3)"], [1, "rgba(6,14,26,.6)"]].forEach(st => g1.addColorStop(st[0], st[1]));
+    cx.fillStyle = g1; cx.fillRect(0, 0, G.w, half);
+    const g2 = cx.createLinearGradient(0, half, 0, half * 2);
+    [[0, "rgba(6,14,26,.6)"], [.45, "rgba(6,14,26,.32)"], [1, "rgba(6,14,26,.92)"]].forEach(st => g2.addColorStop(st[0], st[1]));
+    cx.fillStyle = g2; cx.fillRect(0, half, G.w, half);
+    brackets_();
+    await logo_();
+    const ns = Math.round(G.region * 1.18);
+    const side_ = (top, text, color) => {
+      if (!text) return;
+      setFont(cx, "Montserrat", 900, ns, 0);
+      cx.fillStyle = color; cx.textBaseline = "top";
+      shadowOn(cx, 30, 8, "rgba(0,0,0,.85)");
+      cx.fillText(UP(text), G.side, top);
+      shadowOff(cx); cx.textBaseline = "alphabetic";
+    };
+    side_(half - Math.round(ns * 2.5), d.bolge_adi, "#fff");
+    side_(half + Math.round(ns * 1.3), d.bolge2, p.accent);
+    cx.save();
+    shadowOn(cx, 40, 12, "rgba(0,0,0,.6)");
+    cx.fillStyle = p.accent;
+    cx.beginPath(); cx.arc(G.w / 2, half, 55, 0, Math.PI * 2); cx.fill();
+    shadowOff(cx);
+    setFont(cx, "Montserrat", 900, 44, 0);
+    cx.fillStyle = p.panel; cx.textAlign = "center"; cx.textBaseline = "middle";
+    cx.fillText("VS", G.w / 2, half + 2);
+    cx.restore();
+    cx.textAlign = "left"; cx.textBaseline = "alphabetic";
+    const sub = d.alt_baslik || d.baslik;
+    if (sub) title_({ baslik:sub, vurgu:d.vurgu }, Object.assign({}, tbox, { height: Math.round(G.titleH * 0.42) }),
+      { family:"Montserrat", weight:800, max: Math.round(G.titleMax * 0.6), min: Math.round(G.titleMax * 0.42), maxLines:2 });
+    handle_(600);
+    if (d.kilavuz) guides_();
+    return;
+  }
+
+  if (d.harita) await paintLayer(cx, "harita", d.harita, "cover", 1);
+  if (d.maske) await paintLayer(cx, "maske", d.maske, "contain", .68);
+  cx.fillStyle = vgrad(cx, G, [[0, "rgba(6,14,26,.55)"], [.34, "rgba(6,14,26,.28)"],
+    [.68, "rgba(6,14,26,.62)"], [1, "rgba(6,14,26,.93)"]]);
+  cx.fillRect(0, 0, G.w, G.h);
+  brackets_();
+  await logo_();
+
+  if (d.bolge_adi) {
+    setFont(cx, "Montserrat", 800, G.region, .03);
+    cx.save();
+    cx.translate(G.w / 2, 0.47 * G.h + G.region * 0.6);
+    cx.rotate(-6 * Math.PI / 180);
+    cx.textAlign = "center"; cx.textBaseline = "middle";
+    cx.fillStyle = "#fff";
+    shadowOn(cx, 28, 6, "rgba(0,0,0,.85)");
+    cx.fillText(UP(d.bolge_adi), 0, 0);
+    shadowOff(cx);
+    cx.restore();
+    cx.textAlign = "left"; cx.textBaseline = "alphabetic";
+  }
+
+  let tb = tbox;
+  if (d.yerlesim === "liste") {
+    setFont(cx, "Montserrat", 900, 38, .08);
+    const u = UP(d.rozet || "Sıralama");
+    const bw = cx.measureText(u).width + 60, bh = 74;
+    const by = G.h - (G.titleBottom + Math.round(G.titleH * 0.74)) - bh;
+    cx.fillStyle = p.accent; roundRect(cx, G.side, by, bw, bh, 8); cx.fill();
+    cx.fillStyle = p.panel; cx.textBaseline = "middle";
+    cx.fillText(u, G.side + 30, by + bh / 2 + 2);
+    cx.textBaseline = "alphabetic";
+    tb = Object.assign({}, tbox, { height: Math.round(G.titleH * 0.7) });
+  }
+
+  const opts = d.yerlesim === "vurgu"
+    ? Object.assign({}, osw, { max: Math.round(G.oswMax * 1.14), min: Math.round(G.oswMin * 1.1) })
+    : (d.yerlesim === "liste" ? Object.assign({}, mont, { max: Math.round(G.titleMax * 0.91), min: G.titleMin - 4 }) : mont);
+  title_(d, tb, opts);
+  handle_(d.yerlesim === "vurgu" ? 400 : 600);
+  if (d.kilavuz) guides_();
+}
+
+$("dl").addEventListener("click", async () => {
+  const btn = $("dl"), G = FORMATS[state.format];
+  btn.disabled = true; btn.textContent = "Hazırlanıyor…";
+  const slug = ($("baslik").value || "kapak").toLowerCase()
+    .replace(/[^a-z0-9çğıöşü ]/gi, "").trim().replace(/\s+/g, "-").slice(0, 48) || "kapak";
+  const name = slug + "-" + state.format + ".png";
+  try {
+    try { await document.fonts.ready; } catch (e) {}
+    const d = collect();
+    const p = PALETTES[d.kategori] || PALETTES.deger;
+    const cv = document.createElement("canvas");
+    cv.width = G.w; cv.height = G.h;
+    const cx = cv.getContext("2d");
+    await paintCover(cx, G, p, d);
     const flat = await new Promise(res => cv.toBlob(b => res(b), "image/png"));
     const url = URL.createObjectURL(flat);
-
     if (/iP(hone|ad|od)/.test(navigator.userAgent)) {
       /* iOS: indirme Fotoğraflar'a düşmüyor — görseli tam ekran aç, uzun basıp kaydet */
       $("saveImg").src = url;
@@ -716,11 +969,8 @@ $("dl").addEventListener("click", async () => {
       setTimeout(() => URL.revokeObjectURL(url), 4000);
     }
   } catch (err) {
-    alert("PNG üretilemedi: " + err.message + "\nİnternet bağlantısı gerekiyor (fontlar + dönüştürücü).");
+    alert("PNG üretilemedi: " + (err && err.message ? err.message : err));
   } finally {
-    cover.style.transform = prevT;
-    cover.style.background = prevBg;
-    frame.style.width = prevW; frame.style.height = prevH;
     btn.disabled = false; btn.textContent = "PNG indir";
   }
 });
@@ -739,7 +989,17 @@ document.addEventListener("pointerdown", ev => {
 /* ---------------- uygulama kabuğu: çevrimdışı + ana ekrana ekleme ---------------- */
 if ("serviceWorker" in navigator && location.protocol === "https:") {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js", { scope: "./" }).catch(() => {});
+    navigator.serviceWorker.register("./sw.js", { scope: "./" }).then(r => {
+      /* yeni sürüm bulunursa hemen devralıp bir kez yenile */
+      r.addEventListener("updatefound", () => {});
+      r.update().catch(() => {});
+    }).catch(() => {});
+    let refreshed = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (refreshed) return;
+      refreshed = true;
+      location.reload();
+    });
   });
 }
 

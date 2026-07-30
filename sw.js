@@ -1,6 +1,7 @@
 /* Kapak Stüdyosu — çevrimdışı çalışma katmanı.
-   Uygulama kabuğu önceden, fontlar ve dönüştürücü ilk kullanımda önbelleğe alınır. */
-const V = "kapak-v3";
+   Uygulama dosyaları ağ-önce (yeni sürüm hemen gelir, çevrimdışıysa önbellekten),
+   font ve simgeler önbellek-önce (değişmiyorlar, hız için). */
+const V = "kapak-v5";
 const SHELL = [
   "./",
   "./kapak_studyosu.html",
@@ -30,10 +31,29 @@ self.addEventListener("fetch", e => {
   const req = e.request;
   if (req.method !== "GET") return;
   const url = new URL(req.url);
-  const external = /fonts\.googleapis\.com|fonts\.gstatic\.com|cdn\.jsdelivr\.net/.test(url.hostname);
+  const external = /fonts\.googleapis\.com|fonts\.gstatic\.com/.test(url.hostname);
   if (url.origin !== location.origin && !external) return;
 
-  /* önbellek önce, arkada tazele — çevrimdışıyken de açılır */
+  /* uygulama dosyaları (html/js/json): ağ önce — eski sürüm asla yapışıp kalmasın */
+  const appFile = url.origin === location.origin
+    && (req.mode === "navigate" || /\.(html|js|json)$/.test(url.pathname) || url.pathname.endsWith("/"));
+
+  if (appFile) {
+    e.respondWith((async () => {
+      const cache = await caches.open(V);
+      try {
+        const res = await fetch(req, { cache: "no-store" });
+        if (res && res.ok) cache.put(req, res.clone()).catch(() => {});
+        return res;
+      } catch (err) {
+        const hit = await cache.match(req, { ignoreSearch: true });
+        return hit || new Response("Çevrimdışı", { status: 503, statusText: "offline" });
+      }
+    })());
+    return;
+  }
+
+  /* font, simge, görsel: önbellek önce, arkada tazele */
   e.respondWith((async () => {
     const cache = await caches.open(V);
     const hit = await cache.match(req, { ignoreSearch: url.origin === location.origin });
