@@ -14,7 +14,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800;900&family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Montserrat:wght@300;400;600;700;800;900&family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root { color-scheme: dark; }
   * { box-sizing: border-box; }
@@ -117,22 +117,22 @@
   <select id="kat"></select>
 
   <label>Format</label>
-  <div class="seg" id="fmt">
-    <button data-v="reels" aria-pressed="true">Reels 1080×1920</button>
-    <button data-v="feed">Feed 1080×1350</button>
-    <button data-v="kare">Kare 1080×1080</button>
-  </div>
+  <select id="fmt">
+    <option value="reels">Reels · 1080×1920</option>
+    <option value="feed">Feed · 1080×1350</option>
+    <option value="kare">Kare · 1080×1080</option>
+  </select>
 
   <label>Yerleşim</label>
-  <div class="seg" id="lay">
-    <button data-v="soru" aria-pressed="true">Soru</button>
-    <button data-v="vurgu">Kısa vurgu</button>
-    <button data-v="liste">Liste</button>
-    <button data-v="karsilastirma">Karşılaştırma</button>
-    <button data-v="gundem">Gündem</button>
-  </div>
+  <select id="lay">
+    <option value="soru">Soru</option>
+    <option value="vurgu">Kısa vurgu</option>
+    <option value="liste">Liste</option>
+    <option value="karsilastirma">Karşılaştırma</option>
+    <option value="gundem">Gündem</option>
+  </select>
 
-  <label>Başlık</label>
+  <label>Başlık <span style="text-transform:none;letter-spacing:0;font-weight:600;color:#6f8299">— Enter ile satırı kendin bölebilirsin</span></label>
   <textarea id="baslik">Kadıköy'de toplu ulaşıma en yakın mahalleler</textarea>
 
   <label>Vurgu rengine boyanacak kelime</label>
@@ -158,8 +158,9 @@
     <div class="r"><span>Dikey</span><input type="range" data-a="y" min="-100" max="100" step=".5" value="0"><b>0%</b></div>
     <button data-reset="1">Sıfırla</button>
   </div>
-  <label>Bölge maskesi (şeffaf PNG)</label>
+  <label>Bölge maskesi <span style="text-transform:none;letter-spacing:0;font-weight:600;color:#6f8299">— şeffaf PNG, isteğe bağlı</span></label>
   <div class="drop" id="dropMask">Sürükle-bırak veya tıkla</div>
+  <div style="font-size:12px;line-height:1.5;color:#6f8299;margin-top:6px">Haritanın üstüne binen, mahalle/ilçe sınırının boyalı hâli. Video boru hattı bunu üretiyor; yoksa boş bırak.</div>
   <div class="tset" id="tsetMaske" data-k="maske">
     <div class="r"><span>Yakın</span><input type="range" data-a="z" min="1" max="4" step=".02" value="1"><b>1.00×</b></div>
     <div class="r"><span>Yatay</span><input type="range" data-a="x" min="-100" max="100" step=".5" value="0"><b>0%</b></div>
@@ -222,20 +223,21 @@ const PALETTES = {
 };
 
 const FORMATS = {
-  reels: { w:1080, h:1920, safeBottom:384, mapH:1150, maskTop:560, maskH:460, headerTop:176,
+  reels: { w:1080, h:1920, safeBottom:384, mapH:1150, maskTop:560, maskH:460, headerTop:132,
            brTop:132, brBottom:400, titleBottom:470, titleH:430, handleBottom:404, side:96,
-           titleMax:92, titleMin:58, oswMax:132, oswMin:82, region:100, kicker:50, logo:108 },
-  feed:  { w:1080, h:1350, safeBottom:0, mapH:800, maskTop:360, maskH:380, headerTop:120,
+           titleMax:92, titleMin:58, oswMax:118, oswMin:72, region:100, kicker:50, logo:108 },
+  feed:  { w:1080, h:1350, safeBottom:0, mapH:800, maskTop:360, maskH:380, headerTop:84,
            brTop:84, brBottom:84, titleBottom:200, titleH:380, handleBottom:120, side:84,
-           titleMax:84, titleMin:52, oswMax:118, oswMin:74, region:92, kicker:44, logo:96 },
-  kare:  { w:1080, h:1080, safeBottom:0, mapH:660, maskTop:260, maskH:330, headerTop:104,
+           titleMax:84, titleMin:52, oswMax:106, oswMin:66, region:92, kicker:44, logo:96 },
+  kare:  { w:1080, h:1080, safeBottom:0, mapH:660, maskTop:260, maskH:330, headerTop:72,
            brTop:72, brBottom:72, titleBottom:168, titleH:300, handleBottom:96, side:76,
-           titleMax:74, titleMin:46, oswMax:104, oswMin:66, region:82, kicker:40, logo:86 }
+           titleMax:74, titleMin:46, oswMax:94, oswMin:58, region:82, kicker:40, logo:86 }
 };
 
 const el = (t, s, x) => { const n = document.createElement(t); if (s) n.setAttribute("style", s); if (x != null) n.textContent = x; return n; };
 
 /* Türkçe büyük harf + tek ölçüm kaynağı: önizleme ile indirilen PNG aynı satırları verir */
+const LH = 1.26; /* başlık satır aralığı — çengel (Ç,Ş,Ğ) ile nokta (İ,i) satırları değmesin */
 const UP = s => String(s == null ? "" : s).toLocaleUpperCase("tr");
 const MEAS = document.createElement("canvas").getContext("2d");
 const measure = (family, weight, size, text) => {
@@ -245,22 +247,35 @@ const measure = (family, weight, size, text) => {
 
 function layoutTitle(box, text, accentPhrase, opts) {
   const maxW = box.w - box.left - box.right;
-  const words = String(text || "").trim().split(/\s+/).filter(Boolean);
   const accentWords = (accentPhrase || "").trim().toLocaleLowerCase("tr").split(/\s+/).filter(Boolean);
-  if (!words.length) return { size: opts.min, lines: [], accentWords };
-  for (let size = opts.max; size >= opts.min; size -= 2) {
+  /* Enter ile bölünen satırlara SAYGI: her paragraf kendi içinde sarılır */
+  const paras = String(text || "").split(/\r?\n/).map(t => t.trim());
+  while (paras.length && !paras[paras.length - 1]) paras.pop();
+  if (!paras.some(Boolean)) return { size: opts.min, lines: [], accentWords };
+
+  const limit = opts.maxLines || 5;
+  const floor = Math.max(22, Math.round(opts.min * 0.5));
+  let last = null;
+  for (let size = opts.max; size >= floor; size -= 2) {
     const width = w => measure(opts.family, opts.weight, size, w);
-    const lines = []; let cur = "", ok = true;
-    for (const w of words) {
-      const cand = cur ? cur + " " + w : w;
-      if (width(cand) <= maxW) cur = cand;
-      else if (!cur) { ok = false; break; }
-      else { lines.push(cur); cur = w; }
+    const lines = []; let ok = true;
+    for (const para of paras) {
+      if (!para) { lines.push(""); continue; }
+      let cur = "";
+      for (const w of para.split(/\s+/).filter(Boolean)) {
+        const cand = cur ? cur + " " + w : w;
+        if (width(cand) <= maxW) cur = cand;
+        else if (!cur) { ok = false; break; }
+        else { lines.push(cur); cur = w; }
+      }
+      if (!ok) break;
+      if (cur) lines.push(cur);
     }
-    if (cur) lines.push(cur);
-    if (ok && lines.length <= opts.maxLines && lines.length * size * 1.04 <= box.height) return { size, lines, accentWords };
+    if (!ok) continue;
+    last = { size, lines, accentWords };
+    if (lines.length <= limit && lines.length * size * LH <= box.height) return last;
   }
-  return { size: opts.min, lines: [String(text)], accentWords };
+  return last || { size: floor, lines: paras, accentWords };
 }
 
 function titleBlock(d, p, box, opts) {
@@ -270,7 +285,7 @@ function titleBlock(d, p, box, opts) {
   const lower = s => String(s).toLocaleLowerCase("tr");
   t.lines.forEach(line => {
     const row = el("div", `font-family:${opts.family};font-size:${t.size}px;font-weight:${opts.weight};`
-      + "line-height:1.04;text-transform:uppercase;white-space:nowrap;color:#fff;"
+      + `line-height:${LH};text-transform:uppercase;white-space:nowrap;color:#fff;`
       + "text-shadow:0 6px 26px rgba(0,0,0,.78)");
     const add = (txt, on) => { if (txt) row.appendChild(el("span", on ? `color:${p.accent}` : "", txt)); };
     let handled = false;
@@ -291,6 +306,7 @@ function titleBlock(d, p, box, opts) {
       }
     }
     if (!handled) add(line, false);
+    if (!line) row.textContent = "\u00A0";
     wrap.appendChild(row);
   });
   return wrap;
@@ -369,8 +385,8 @@ function build(d) {
   cover.style.background = p.panel;
   cover.setAttribute("lang", "tr");
 
-  const mont = { family:"Montserrat", weight:900, max:G.titleMax, min:G.titleMin, maxLines:3 };
-  const osw  = { family:"Oswald", weight:600, max:G.oswMax, min:G.oswMin, maxLines:3 };
+  const mont = { family:"Montserrat", weight:900, max:G.titleMax, min:G.titleMin, maxLines:5 };
+  const osw  = { family:"Archivo Black", weight:400, max:G.oswMax, min:G.oswMin, maxLines:5 };
   const tbox = { w:G.w, left:G.side, right:G.side + 14, bottom:G.titleBottom, height:G.titleH };
 
   if (d.yerlesim === "gundem") {
@@ -400,6 +416,10 @@ function build(d) {
       + "background:linear-gradient(180deg, rgba(6,14,26,.74) 0%, rgba(6,14,26,.3) 45%, rgba(6,14,26,.6) 100%)"));
     cover.appendChild(el("div", `position:absolute;top:${half}px;left:0;right:0;height:${half}px;`
       + "background:linear-gradient(180deg, rgba(6,14,26,.6) 0%, rgba(6,14,26,.32) 45%, rgba(6,14,26,.92) 100%)"));
+    /* iki görselin ayrımı: köşe çizgileriyle aynı dilde, 4 px beyaz bant */
+    cover.appendChild(el("div", `position:absolute;top:${half - 2}px;left:0;right:0;height:4px;`
+      + "background:rgba(255,255,255,.9);box-shadow:0 0 26px rgba(0,0,0,.6)"));
+    cover.appendChild(el("div", `position:absolute;top:${half - 2}px;left:0;width:${Math.round(G.w * 0.28)}px;height:4px;background:${p.accent}`));
     cover.appendChild(brackets(G));
     cover.appendChild(header(G, p, d.etiket || "Karşılaştırma", 700, true));
     const ns = Math.round(G.region * 1.18);
@@ -416,7 +436,7 @@ function build(d) {
     const sub = d.alt_baslik || d.baslik;
     if (sub) cover.appendChild(titleBlock({ baslik:sub, vurgu:d.vurgu }, p,
       Object.assign({}, tbox, { height: Math.round(G.titleH * 0.42) }),
-      { family:"Montserrat", weight:800, max: Math.round(G.titleMax * 0.6), min: Math.round(G.titleMax * 0.42), maxLines:2 }));
+      { family:"Montserrat", weight:800, max: Math.round(G.titleMax * 0.74), min: Math.round(G.titleMax * 0.54), maxLines:2 }));
     cover.appendChild(handle(G, 600, d.hesap));
     if (d.kilavuz) cover.appendChild(guides(G));
     return;
@@ -521,9 +541,9 @@ function restore() {
   if (o.state) {
     state.format = o.state.format || state.format;
     state.yerlesim = o.state.yerlesim || state.yerlesim;
-    document.querySelectorAll("#fmt button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === state.format)));
-    document.querySelectorAll("#lay button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === state.yerlesim)));
   }
+  $("fmt").value = state.format;
+  $("lay").value = state.yerlesim;
 }
 
 function render() {
@@ -537,15 +557,8 @@ function render() {
   requestAnimationFrame(fit);
 }
 
-document.querySelectorAll("#fmt button, #lay button").forEach(b => {
-  b.addEventListener("click", () => {
-    const group = b.parentElement;
-    group.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", "false"));
-    b.setAttribute("aria-pressed", "true");
-    state[group.id === "fmt" ? "format" : "yerlesim"] = b.dataset.v;
-    render();
-  });
-});
+$("fmt").addEventListener("change", () => { state.format = $("fmt").value; render(); });
+$("lay").addEventListener("change", () => { state.yerlesim = $("lay").value; render(); });
 FIELDS.forEach(id => $(id).addEventListener("input", render));
 kat.addEventListener("change", render);
 $("kilavuz").addEventListener("change", render);
@@ -779,12 +792,12 @@ async function paintCover(cx, G, p, d) {
   const title_ = (dd, box, opts) => {
     const t = layoutTitle(box, dd.baslik, dd.vurgu, opts);
     if (!t.lines.length) return;
-    const H = t.lines.length * t.size * 1.04;
+    const H = t.lines.length * t.size * LH;
     const top = (G.h - box.bottom) - H;
     setFont(cx, opts.family, opts.weight, t.size, 0);
     const phrase = (dd.vurgu || "").trim();
     t.lines.forEach((line, i) => {
-      const baseY = top + i * t.size * 1.04 + t.size * 0.84;
+      const baseY = top + i * t.size * LH + t.size * 0.94;
       let x = box.left;
       const seg = (txt, on) => {
         if (!txt) return;
@@ -832,8 +845,8 @@ async function paintCover(cx, G, p, d) {
     }
   };
 
-  const mont = { family:"Montserrat", weight:900, max:G.titleMax, min:G.titleMin, maxLines:3 };
-  const osw  = { family:"Oswald", weight:600, max:G.oswMax, min:G.oswMin, maxLines:3 };
+  const mont = { family:"Montserrat", weight:900, max:G.titleMax, min:G.titleMin, maxLines:5 };
+  const osw  = { family:"Archivo Black", weight:400, max:G.oswMax, min:G.oswMin, maxLines:5 };
   const tbox = { w:G.w, left:G.side, right:G.side + 14, bottom:G.titleBottom, height:G.titleH };
 
   if (d.yerlesim === "gundem") {
@@ -869,6 +882,12 @@ async function paintCover(cx, G, p, d) {
     const g2 = cx.createLinearGradient(0, half, 0, half * 2);
     [[0, "rgba(6,14,26,.6)"], [.45, "rgba(6,14,26,.32)"], [1, "rgba(6,14,26,.92)"]].forEach(st => g2.addColorStop(st[0], st[1]));
     cx.fillStyle = g2; cx.fillRect(0, half, G.w, half);
+    cx.save();
+    shadowOn(cx, 26, 0, "rgba(0,0,0,.6)");
+    cx.fillStyle = "rgba(255,255,255,.9)"; cx.fillRect(0, half - 2, G.w, 4);
+    shadowOff(cx);
+    cx.restore();
+    cx.fillStyle = p.accent; cx.fillRect(0, half - 2, Math.round(G.w * 0.28), 4);
     brackets_();
     await logo_();
     const ns = Math.round(G.region * 1.18);
@@ -894,7 +913,7 @@ async function paintCover(cx, G, p, d) {
     cx.textAlign = "left"; cx.textBaseline = "alphabetic";
     const sub = d.alt_baslik || d.baslik;
     if (sub) title_({ baslik:sub, vurgu:d.vurgu }, Object.assign({}, tbox, { height: Math.round(G.titleH * 0.42) }),
-      { family:"Montserrat", weight:800, max: Math.round(G.titleMax * 0.6), min: Math.round(G.titleMax * 0.42), maxLines:2 });
+      { family:"Montserrat", weight:800, max: Math.round(G.titleMax * 0.74), min: Math.round(G.titleMax * 0.54), maxLines:2 });
     handle_(600);
     if (d.kilavuz) guides_();
     return;
