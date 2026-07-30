@@ -1,6 +1,6 @@
 /* Kapak Stüdyosu — çevrimdışı çalışma katmanı.
    Uygulama kabuğu önceden, fontlar ve dönüştürücü ilk kullanımda önbelleğe alınır. */
-const V = "kapak-v1";
+const V = "kapak-v3";
 const SHELL = [
   "./",
   "./kapak_studyosu.html",

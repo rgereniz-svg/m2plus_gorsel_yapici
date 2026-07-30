@@ -114,6 +114,9 @@
   <h1>Kapak Stüdyosu</h1>
   <p class="sub">Metni yaz, haritayı sürükle, PNG indir. Satırlama ve punto otomatik; alt %20 bandı korunuyor.</p>
 
+  <label>Kategori · palet</label>
+  <select id="kat"></select>
+
   <label>Format</label>
   <div class="seg" id="fmt">
     <button data-v="reels" aria-pressed="true">Reels 1080×1920</button>
@@ -129,9 +132,6 @@
     <button data-v="karsilastirma">Karşılaştırma</button>
     <button data-v="gundem">Gündem (haritasız)</button>
   </div>
-
-  <label>Kategori · palet</label>
-  <select id="kat"></select>
 
   <label>Başlık</label>
   <textarea id="baslik">Kadıköy'de toplu ulaşıma en yakın mahalleler</textarea>
@@ -239,7 +239,7 @@ const el = (t, s, x) => { const n = document.createElement(t); if (s) n.setAttri
 function layoutTitle(box, text, accentPhrase, opts) {
   const maxW = box.w - box.left - box.right;
   const words = String(text || "").trim().split(/\s+/).filter(Boolean);
-  const accentWords = (accentPhrase || "").trim().toLowerCase().split(/\s+/).filter(Boolean);
+  const accentWords = (accentPhrase || "").trim().toLocaleLowerCase("tr").split(/\s+/).filter(Boolean);
   if (!words.length) return { size: opts.min, lines: [], accentWords };
   for (let size = opts.max; size >= opts.min; size -= 2) {
     const probe = el("div", `position:absolute;visibility:hidden;white-space:nowrap;font-family:${opts.family};`
@@ -263,11 +263,32 @@ function layoutTitle(box, text, accentPhrase, opts) {
 function titleBlock(d, p, box, opts) {
   const t = layoutTitle(box, d.baslik, d.vurgu, opts);
   const wrap = el("div", `position:absolute;left:${box.left}px;right:${box.right}px;bottom:${box.bottom}px`);
+  const phrase = (d.vurgu || "").trim();
+  const lower = s => String(s).toLocaleLowerCase("tr");
   t.lines.forEach(line => {
-    const acc = t.accentWords.length && line.toLowerCase().split(/\s+/).some(w => t.accentWords.includes(w.replace(/[?.,:;]/g, "")));
-    wrap.appendChild(el("div", `font-family:${opts.family};font-size:${t.size}px;font-weight:${opts.weight};`
-      + `line-height:1.04;text-transform:uppercase;white-space:nowrap;color:${acc ? p.accent : "#fff"};`
-      + "text-shadow:0 6px 26px rgba(0,0,0,.78)", line));
+    const row = el("div", `font-family:${opts.family};font-size:${t.size}px;font-weight:${opts.weight};`
+      + "line-height:1.04;text-transform:uppercase;white-space:nowrap;color:#fff;"
+      + "text-shadow:0 6px 26px rgba(0,0,0,.78)");
+    const add = (txt, on) => { if (txt) row.appendChild(el("span", on ? `color:${p.accent}` : "", txt)); };
+    let handled = false;
+    if (phrase) {
+      const i = lower(line).indexOf(lower(phrase));
+      if (i >= 0) {
+        /* vurgu aynı satırda: yalnız o kelimeler boyanır */
+        add(line.slice(0, i), false);
+        add(line.slice(i, i + phrase.length), true);
+        add(line.slice(i + phrase.length), false);
+        handled = true;
+      } else if (t.accentWords.length) {
+        /* vurgu iki satıra bölünmüş: kelime kelime eşleştir */
+        line.split(/(\s+)/).forEach(part => {
+          add(part, /\S/.test(part) && t.accentWords.includes(lower(part).replace(/[?.,:;!"']/g, "")));
+        });
+        handled = true;
+      }
+    }
+    if (!handled) add(line, false);
+    wrap.appendChild(row);
   });
   return wrap;
 }
@@ -285,18 +306,13 @@ function brackets(G) {
 
 function header(G, p, label, weight, boxed) {
   const row = el("div", `position:absolute;top:${G.headerTop}px;left:${G.side + 16}px;right:${G.side}px;`
-    + "display:flex;justify-content:space-between;align-items:center");
-  const pill = el("div", "display:flex;align-items:center;gap:14px;"
-    + (boxed ? "background:rgba(6,14,26,.62);" : "")
-    + `border:1px solid rgba(255,255,255,${boxed ? ".16" : ".22"});padding:16px 28px;border-radius:100px`);
-  pill.appendChild(el("span", `width:14px;height:14px;border-radius:50%;background:${p.accent};display:block`));
-  pill.appendChild(el("span", `font-family:Montserrat;font-size:26px;font-weight:${weight};letter-spacing:.16em;`
-    + "text-transform:uppercase;color:#fff", label));
-  /* Logo her kapakta AYNI: beyaz m2 + logo sarısı. Palete göre değişmez. */
+    + "display:flex;justify-content:flex-end;align-items:center");
+  /* Kategori adı kapağın üzerine YAZILMAZ — paleti belirler, o kadar.
+     Logo her kapakta AYNI: beyaz m2 + logo sarısı. Palete göre değişmez. */
   const mark = el("img", `height:${G.logo}px;width:auto;display:block`);
   mark.src = LOGO;
   mark.alt = "m2+";
-  row.appendChild(pill); row.appendChild(mark);
+  row.appendChild(mark);
   return row;
 }
 
@@ -343,6 +359,7 @@ function build(d) {
   const G = FORMATS[d.format] || FORMATS.reels;
   const p = Object.assign({}, PALETTES[d.kategori] || PALETTES.deger);
   const cover = document.getElementById("cover");
+  Object.keys(BOXES).forEach(k => delete BOXES[k]);
   cover.innerHTML = "";
   cover.style.width = G.w + "px";
   cover.style.height = G.h + "px";
@@ -369,8 +386,8 @@ function build(d) {
 
   if (d.yerlesim === "karsilastirma") {
     const half = Math.round((G.h - G.safeBottom) / 2);
-    if (d.harita)  cover.appendChild(box(img(d.harita,  `top:0;left:0;right:0;height:${half}px`, "harita"), "harita", G.w, half));
-    if (d.harita2) cover.appendChild(box(img(d.harita2, `top:${half}px;left:0;right:0;height:${half}px`, "harita2"), "harita2", G.w, half));
+    if (d.harita)  cover.appendChild(reg(img(d.harita,  `top:0;left:0;right:0;height:${half}px`, "harita"), "harita", G.w, half));
+    if (d.harita2) cover.appendChild(reg(img(d.harita2, `top:${half}px;left:0;right:0;height:${half}px`, "harita2"), "harita2", G.w, half));
     cover.appendChild(el("div", `position:absolute;top:0;left:0;right:0;height:${half}px;`
       + "background:linear-gradient(180deg, rgba(6,14,26,.74) 0%, rgba(6,14,26,.3) 45%, rgba(6,14,26,.6) 100%)"));
     cover.appendChild(el("div", `position:absolute;top:${half}px;left:0;right:0;height:${half}px;`
@@ -397,12 +414,12 @@ function build(d) {
     return;
   }
 
-  if (d.harita) cover.appendChild(box(img(d.harita, `top:0;left:0;right:0;height:${G.mapH}px`, "harita"), "harita", G.w, G.mapH));
+  if (d.harita) cover.appendChild(reg(img(d.harita, `top:0;left:0;right:0;height:${G.mapH}px`, "harita"), "harita", G.w, G.mapH));
   if (d.maske) {
     const m = img(d.maske, `top:${G.maskTop}px;left:80px;right:80px;height:${G.maskH}px`, "maske");
     m.inner.style.backgroundSize = "contain"; m.style.opacity = ".68";
     m.style.filter = "drop-shadow(0 0 24px rgba(0,0,0,.55))";
-    cover.appendChild(box(m, "maske", G.w - 160, G.maskH));
+    cover.appendChild(reg(m, "maske", G.w - 160, G.maskH));
   }
   cover.appendChild(scrim("rgba(6,14,26,.55) 0%, rgba(6,14,26,.28) 34%, rgba(6,14,26,.62) 68%, rgba(6,14,26,.93) 100%"));
   cover.appendChild(brackets(G));
@@ -437,7 +454,10 @@ function build(d) {
 const state = { format:"reels", yerlesim:"soru", kategori:"ulasim", harita:null, maske:null, harita2:null };
 const TR = { harita:{z:1,x:0,y:0}, maske:{z:1,x:0,y:0}, harita2:{z:1,x:0,y:0} };
 const BOXES = {};
-const box = (node, key, w, h) => { BOXES[key] = { w, h, top: parseFloat(node.style.top) || 0 }; return node; };
+const reg = (node, key, w, h) => {
+  BOXES[key] = { w, h, left: parseFloat(node.style.left) || 0, top: parseFloat(node.style.top) || 0 };
+  return node;
+};
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const $ = id => document.getElementById(id);
 
@@ -615,40 +635,75 @@ Object.keys(TSETS).forEach(key => {
   frame.addEventListener("pointercancel", end);
 })();
 
+const loadImg = src => new Promise((res, rej) => {
+  const im = new Image();
+  im.onload = () => res(im);
+  im.onerror = rej;
+  im.src = src;
+});
+
+/* Fotoğraf katmanlarını canvas'a kendimiz çiziyoruz: HTML→PNG dönüştürücüsü
+   gömmüş görselleri (data URI) bazı tarayıcılarda sessizce atlıyor.
+   Çizim matematiği önizlemedekiyle aynı: cover/contain oturtma + translate(x%,y%) scale(z). */
+async function paintLayer(cx, key, src, fitMode, alpha) {
+  const b = BOXES[key]; if (!b) return;
+  const im = await loadImg(src);
+  const iw = im.naturalWidth, ih = im.naturalHeight; if (!iw || !ih) return;
+  const t = TR[key] || { z:1, x:0, y:0 };
+  const s0 = fitMode === "contain" ? Math.min(b.w / iw, b.h / ih) : Math.max(b.w / iw, b.h / ih);
+  const dw = iw * s0 * t.z, dh = ih * s0 * t.z;
+  const ccx = b.left + b.w / 2 + t.x / 100 * b.w;
+  const ccy = b.top + b.h / 2 + t.y / 100 * b.h;
+  cx.save();
+  cx.beginPath(); cx.rect(b.left, b.top, b.w, b.h); cx.clip();
+  cx.globalAlpha = alpha == null ? 1 : alpha;
+  cx.drawImage(im, ccx - dw / 2, ccy - dh / 2, dw, dh);
+  cx.restore();
+}
+
 $("dl").addEventListener("click", async () => {
   const btn = $("dl"), G = FORMATS[state.format], cover = $("cover"), frame = $("frame");
   btn.disabled = true; btn.textContent = "Hazırlanıyor…";
   const prevT = cover.style.transform, prevW = frame.style.width, prevH = frame.style.height;
+  const prevBg = cover.style.background;
   cover.style.transform = "none";
   frame.style.width = G.w + "px"; frame.style.height = G.h + "px";
   const slug = ($("baslik").value || "kapak").toLowerCase()
     .replace(/[^a-z0-9çğıöşü ]/gi, "").trim().replace(/\s+/g, "-").slice(0, 48) || "kapak";
   const name = `${slug}-${state.format}.png`;
+  const panel = (PALETTES[kat.value] || PALETTES.deger).panel;
   try {
+    /* metin/çizgi/gradyıan katmanı şeffaf zeminle yakalanır, altına fotoğraflar girer */
+    cover.style.background = "transparent";
+    const opts = { width: G.w, height: G.h, pixelRatio: 1, cacheBust: true, backgroundColor: null };
     /* iOS Safari ilk dönüştürmede boş/eksik kare verebiliyor — 3 tur ısıtma */
-    const opts = { width: G.w, height: G.h, pixelRatio: 1, cacheBust: true };
     let blob = null;
     for (let i = 0; i < 3; i++) blob = await htmlToImage.toBlob(cover, opts);
-    /* logoyu PNG'ye canvas ile tekrar bas: bazı tarayıcılar dönüştürmede gömülü görseli atlayabiliyor */
-    const flat = await new Promise((res, rej) => {
-      const base = new Image();
-      base.onload = () => {
-        const cv = document.createElement("canvas");
-        cv.width = G.w; cv.height = G.h;
-        const cx = cv.getContext("2d");
-        cx.drawImage(base, 0, 0, G.w, G.h);
-        const lg = new Image();
-        lg.onload = () => {
-          const lw = G.logo * (lg.naturalWidth / lg.naturalHeight);
-          cx.drawImage(lg, G.w - G.side - lw, G.headerTop, lw, G.logo);
-          cv.toBlob(b => res(b), "image/png");
-        };
-        lg.onerror = () => cv.toBlob(b => res(b), "image/png");
-        lg.src = LOGO;
-      };
-      base.onerror = rej;
-      base.src = URL.createObjectURL(blob);
-    });
+    cover.style.background = prevBg;
+
+    const cv = document.createElement("canvas");
+    cv.width = G.w; cv.height = G.h;
+    const cx = cv.getContext("2d");
+    cx.fillStyle = panel; cx.fillRect(0, 0, G.w, G.h);
+
+    if (state.harita)  await paintLayer(cx, "harita", state.harita, "cover", 1);
+    if (state.harita2) await paintLayer(cx, "harita2", state.harita2, "cover", 1);
+    if (state.maske)   await paintLayer(cx, "maske", state.maske, "contain", 0.68);
+
+    const url0 = URL.createObjectURL(blob);
+    try {
+      const base = await loadImg(url0);
+      cx.drawImage(base, 0, 0, G.w, G.h);
+    } finally { URL.revokeObjectURL(url0); }
+
+    /* logo: dönüştürücü atlayabildiği için ayrıca basılıyor */
+    try {
+      const lg = await loadImg(LOGO);
+      const lw = G.logo * (lg.naturalWidth / lg.naturalHeight);
+      cx.drawImage(lg, G.w - G.side - lw, G.headerTop, lw, G.logo);
+    } catch (e) {}
+
+    const flat = await new Promise(res => cv.toBlob(b => res(b), "image/png"));
     const url = URL.createObjectURL(flat);
 
     if (/iP(hone|ad|od)/.test(navigator.userAgent)) {
@@ -664,12 +719,22 @@ $("dl").addEventListener("click", async () => {
     alert("PNG üretilemedi: " + err.message + "\nİnternet bağlantısı gerekiyor (fontlar + dönüştürücü).");
   } finally {
     cover.style.transform = prevT;
+    cover.style.background = prevBg;
     frame.style.width = prevW; frame.style.height = prevH;
     btn.disabled = false; btn.textContent = "PNG indir";
   }
 });
 
 $("saveClose").addEventListener("click", () => $("save").classList.remove("on"));
+
+/* alana dışarı dokununca klavye kapanır — "tik"e basmak gerekmez */
+document.addEventListener("pointerdown", ev => {
+  const a = document.activeElement;
+  if (!a || !/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) return;
+  if (ev.target === a) return;
+  if (ev.target.closest && ev.target.closest("input,textarea,select")) return;
+  a.blur();
+}, true);
 
 /* ---------------- uygulama kabuğu: çevrimdışı + ana ekrana ekleme ---------------- */
 if ("serviceWorker" in navigator && location.protocol === "https:") {
