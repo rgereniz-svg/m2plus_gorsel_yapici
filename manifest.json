@@ -1,0 +1,17 @@
+{
+  "name": "MetrekarePlus Kapak Stüdyosu",
+  "short_name": "Kapak",
+  "description": "MetrekarePlus sosyal medya kapak görseli üretici — 5 yerleşim, 12 palet, 3 format.",
+  "start_url": "./kapak_studyosu.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0d1117",
+  "theme_color": "#0d1117",
+  "lang": "tr",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
