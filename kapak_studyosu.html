@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>MetrekarePlus — Kapak Stüdyosu</title>
+<title>MetrekarePlus — Kapak</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Kapak">
@@ -14,1032 +14,358 @@
 <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Montserrat:wght@300;400;600;700;800;900&family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-  :root { color-scheme: dark; }
+  :root { color-scheme: dark; --mor:#C04CFF; --mor2:#8A2BD0; }
   * { box-sizing: border-box; }
   body { margin:0; background:#0d1117; color:#e8eef6; font-family:Montserrat,system-ui,sans-serif;
-         display:grid; grid-template-columns:420px 1fr; height:100vh; height:100dvh; overflow:hidden; }
-  #panel { padding:28px; overflow-y:auto; border-right:1px solid rgba(255,255,255,.1); background:#111a26;
-           -webkit-overflow-scrolling:touch; }
+         display:grid; grid-template-columns:400px 1fr; height:100vh; height:100dvh; overflow:hidden; }
+  #panel { padding:28px 28px calc(28px + env(safe-area-inset-bottom)); overflow-y:auto;
+           border-right:1px solid rgba(255,255,255,.1); background:#111a26; -webkit-overflow-scrolling:touch; }
   #panel h1 { font-size:20px; font-weight:800; margin:0 0 4px }
-  #panel p.sub { font-size:13px; line-height:1.5; color:#8fa1b6; margin:0 0 24px }
-  label { display:block; font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+  #panel p.sub { font-size:13px; line-height:1.5; color:#8fa1b6; margin:0 0 20px }
+  label { display:block; font-size:12px; font-weight:800; letter-spacing:.14em; text-transform:uppercase;
           color:#8fa1b6; margin:18px 0 8px }
-  input[type=text], textarea, select { width:100%; background:#0b1420; color:#e8eef6; font-family:inherit;
+  label small { text-transform:none; letter-spacing:0; font-weight:600; color:#6f8299 }
+  textarea, select { width:100%; background:#0b1420; color:#e8eef6; font-family:inherit;
     font-size:15px; border:1px solid rgba(255,255,255,.16); border-radius:8px; padding:11px 13px }
-  textarea { resize:vertical; min-height:70px; line-height:1.4 }
-  .row { display:flex; gap:10px }
-  .row > * { flex:1 }
-  .seg { display:flex; gap:6px; flex-wrap:wrap }
-  .seg button { flex:1; min-width:88px; background:#0b1420; color:#c6d3e2; border:1px solid rgba(255,255,255,.16);
-    border-radius:8px; padding:10px 8px; font-family:inherit; font-size:13px; font-weight:700; cursor:pointer }
-  .seg button[aria-pressed=true] { background:#FFC93C; border-color:#FFC93C; color:#0A243E }
+  textarea { resize:vertical; min-height:96px; line-height:1.4 }
   .drop { border:1px dashed rgba(255,255,255,.28); border-radius:10px; padding:16px; font-size:13px;
     color:#8fa1b6; text-align:center; cursor:pointer; background:#0b1420 }
-  .drop.on { border-color:#FFC93C; color:#FFC93C }
-  .drop img { max-width:100%; max-height:90px; display:block; margin:8px auto 0; border-radius:6px }
+  .drop.on { border-color:var(--mor); color:#d9a6ff }
+  .r { display:flex; align-items:center; gap:10px; margin-top:8px }
+  .r > span { flex:none; width:64px; font-size:11px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:#8fa1b6 }
+  .r > b { flex:none; width:44px; text-align:right; font-size:11px; color:#c6d3e2; font-weight:600; font-variant-numeric:tabular-nums }
+  input[type=range] { flex:1; height:30px; accent-color:var(--mor); background:transparent }
+  .btn2 { margin-top:10px; background:transparent; color:#8fa1b6; border:1px solid rgba(255,255,255,.16);
+    border-radius:8px; padding:9px 14px; font-family:inherit; font-size:12px; font-weight:800; min-height:40px; cursor:pointer }
   .check { display:flex; align-items:center; gap:10px; margin-top:18px; font-size:14px; color:#c6d3e2 }
-  #dl { width:100%; margin-top:26px; background:#FFC93C; color:#0A243E; border:0; border-radius:10px;
+  #dl { width:100%; margin-top:24px; background:var(--mor); color:#fff; border:0; border-radius:10px;
     padding:15px; font-family:inherit; font-size:15px; font-weight:800; cursor:pointer }
   #dl:disabled { opacity:.5; cursor:wait }
-  #note { font-size:12px; color:#6f8299; line-height:1.5; margin-top:14px }
+  #note { font-size:12px; color:#6f8299; line-height:1.5; margin-top:12px }
   #stage { display:flex; align-items:center; justify-content:center; overflow:hidden; padding:24px }
-  #frame { overflow:hidden; box-shadow:0 30px 80px rgba(0,0,0,.6) }
-  #cover { position:relative; overflow:hidden; transform-origin:top left }
-
-  /* --- mobil: önizleme üstte sabit, kontroller altta kayan tabaka --- */
-  @media (max-width: 900px) {
-    body { grid-template-columns:1fr; grid-template-rows:42dvh 1fr; }
-    #stage { order:1; padding:12px; border-bottom:1px solid rgba(255,255,255,.12); background:#0a0f16 }
-    #panel { order:2; padding:20px 18px calc(64px + env(safe-area-inset-bottom)); border-right:0 }
-    #panel h1 { font-size:18px }
-    #panel p.sub { margin-bottom:16px }
-    label { margin:16px 0 8px }
-    input[type=text], textarea, select { font-size:16px; padding:14px 14px; border-radius:10px }
-    .seg button { min-height:52px; min-width:calc(50% - 6px); font-size:14px }
-    .row { flex-direction:column; gap:0 }
-    .drop { padding:22px 16px; font-size:14px }
-    .check { min-height:48px; font-size:15px }
-    .check input { width:22px; height:22px }
-    #dl { position:sticky; bottom:0; padding:18px; font-size:16px; box-shadow:0 -12px 24px rgba(13,17,23,.9) }
-  }
-
-  /* --- indirilen görseli mobilde kaydetme katmanı --- */
+  #frame { position:relative; box-shadow:0 30px 80px rgba(0,0,0,.6); touch-action:none; cursor:grab; line-height:0 }
+  #frame.drag { cursor:grabbing }
+  #cv { width:100%; height:100%; display:block }
+  .g { position:absolute; left:0; right:0; pointer-events:none; display:none }
+  .guides .g { display:block }
+  #g45 { border-top:2px dashed #FFC93C; border-bottom:2px dashed #FFC93C }
+  #gbot { bottom:0; background:rgba(255,80,80,.18); border-top:2px dashed #FF6B6B }
   #save { position:fixed; inset:0; background:rgba(6,10,16,.94); display:none; z-index:9;
-          flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:20px }
+          flex-direction:column; align-items:center; justify-content:center; gap:16px;
+          padding:calc(20px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom)) }
   #save.on { display:flex }
   #save img { max-width:100%; max-height:68vh; border-radius:8px }
   #save p { margin:0; font-size:15px; line-height:1.5; color:#c6d3e2; text-align:center; max-width:340px }
-  #save button { background:#FFC93C; color:#0A243E; border:0; border-radius:10px; padding:15px 28px;
+  #save button { background:var(--mor); color:#fff; border:0; border-radius:10px; padding:15px 28px;
                  font-family:inherit; font-size:15px; font-weight:800; min-height:50px }
-
-  /* --- görsel yerleşim (zoom / kaydırma) --- */
-  .tset { display:none; flex-direction:column; gap:8px; margin-top:10px; padding:12px;
-          border:1px solid rgba(255,255,255,.12); border-radius:10px; background:#0b1420 }
-  .tset.on { display:flex }
-  .tset .r { display:flex; align-items:center; gap:10px }
-  .tset .r > span { flex:none; width:52px; font-size:11px; font-weight:700; letter-spacing:.1em;
-                    text-transform:uppercase; color:#8fa1b6 }
-  .tset .r > b { flex:none; width:46px; text-align:right; font-size:11px; color:#c6d3e2;
-                 font-variant-numeric:tabular-nums; font-weight:600 }
-  .tset input[type=range] { flex:1; height:30px; accent-color:#FFC93C; background:transparent }
-  .tset button { background:transparent; color:#8fa1b6; border:1px solid rgba(255,255,255,.16);
-    border-radius:8px; padding:9px; font-family:inherit; font-size:12px; font-weight:700; min-height:40px }
-  #frame { touch-action:none; cursor:grab }
-  #frame.drag { cursor:grabbing }
-
-  /* --- ana ekrana eklenince: çentik / ev çubuğu boşluğu --- */
-  #panel { padding-bottom:calc(28px + env(safe-area-inset-bottom)) }
-  #save { padding:calc(20px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom)) }
-
-  /* --- "ana ekrana ekle" ipucu (yalnız iOS Safari'de, sekmedeyken) --- */
-  #a2hs { display:none; margin-top:18px; padding:14px 16px; border-radius:12px;
-          border:1px solid rgba(255,201,60,.34); background:rgba(255,201,60,.09);
-          font-size:13px; line-height:1.55; color:#e8d9ad }
+  #a2hs { display:none; margin-top:18px; padding:14px 16px; border-radius:12px; border:1px solid rgba(192,76,255,.4);
+          background:rgba(192,76,255,.1); font-size:13px; line-height:1.55; color:#e3cdf5 }
   #a2hs.on { display:block }
-  #a2hs b { color:#FFC93C }
-  #a2hs button { margin-top:10px; background:transparent; border:1px solid rgba(255,255,255,.2);
-    color:#8fa1b6; border-radius:8px; padding:8px 14px; font-family:inherit; font-size:12px;
-    font-weight:700; min-height:38px }
-  @media (max-width:900px) {
-    .tset input[type=range] { height:44px }
-    .tset button { min-height:48px }
+  @media (max-width: 900px) {
+    body { grid-template-columns:1fr; grid-template-rows:44dvh 1fr; }
+    #stage { order:1; padding:12px; border-bottom:1px solid rgba(255,255,255,.12); background:#0a0f16 }
+    #panel { order:2; padding:20px 18px calc(64px + env(safe-area-inset-bottom)); border-right:0 }
+    textarea, select { font-size:16px; padding:14px; border-radius:10px }
+    input[type=range] { height:44px }
+    .drop { padding:22px 16px; font-size:14px }
+    .check input { width:22px; height:22px }
+    #dl { position:sticky; bottom:0; padding:18px; font-size:16px; box-shadow:0 -12px 24px rgba(13,17,23,.9) }
   }
 </style>
 </head>
 <body>
 <div id="panel">
-  <h1>Kapak Stüdyosu</h1>
-  <p class="sub">Metni yaz, haritayı sürükle, PNG indir. Satırlama ve punto otomatik; alt %20 bandı korunuyor.</p>
+  <h1>Kapak</h1>
+  <p class="sub">Fotoğraf seç, başlığı yaz, PNG indir. 1080×1920; yazılar 4:5 güvenli alanın içinde kalır.</p>
 
-  <label>Kategori · palet</label>
-  <select id="kat"></select>
+  <label>Başlık <small>— Enter ile satırı kendin bölebilirsin</small></label>
+  <textarea id="baslik">Konut kredisi faizleri yine düştü</textarea>
 
-  <label>Format</label>
-  <select id="fmt">
-    <option value="reels">Reels · 1080×1920</option>
-    <option value="feed">Feed · 1080×1350</option>
-    <option value="kare">Kare · 1080×1080</option>
-  </select>
+  <label>Etiket <small>— seçmezsen hiç görünmez</small></label>
+  <select id="etiket"></select>
 
-  <label>Yerleşim</label>
-  <select id="lay">
-    <option value="soru">Soru</option>
-    <option value="vurgu">Kısa vurgu</option>
-    <option value="liste">Liste</option>
-    <option value="karsilastirma">Karşılaştırma</option>
-    <option value="gundem">Gündem</option>
-  </select>
+  <label>Fotoğraf</label>
+  <div class="drop" id="drop">Dokun ve fotoğraf seç (ya da sürükle-bırak)</div>
+  <input type="file" id="file" accept="image/*" hidden>
+  <div class="r"><span>Yakınlık</span><input type="range" id="z" min="1" max="4" step=".01" value="1"><b id="zv">1.00×</b></div>
+  <div class="r"><span>Karartma</span><input type="range" id="dark" min="0" max="85" step="1" value="45"><b id="dv">45%</b></div>
+  <button class="btn2" id="reset">Konumu sıfırla</button>
 
-  <label>Başlık <span style="text-transform:none;letter-spacing:0;font-weight:600;color:#6f8299">— Enter ile satırı kendin bölebilirsin</span></label>
-  <textarea id="baslik">Kadıköy'de toplu ulaşıma en yakın mahalleler</textarea>
-
-  <label>Vurgu rengine boyanacak kelime</label>
-  <input type="text" id="vurgu" value="toplu ulaşıma">
-
-  <div class="row">
-    <div><label>Bölge adı (harita üstü)</label><input type="text" id="bolge" value="Kadıköy"></div>
-    <div><label>2. bölge (karşılaştırma)</label><input type="text" id="bolge2"></div>
-  </div>
-  <div class="row">
-    <div><label>Rozet (liste)</label><input type="text" id="rozet" placeholder="10 mahalle"></div>
-    <div><label>Üst satır (gündem)</label><input type="text" id="kicker" placeholder="Bu ayın kira gündemi"></div>
-  </div>
-
-  <label>Ölçüt satırı (karşılaştırma)</label>
-  <input type="text" id="alt" placeholder="Ulaşım, kira ve yeşil alan karşılaştırması">
-
-  <label>Görsel / uydu haritası</label>
-  <div class="drop" id="dropMap">Sürükle-bırak veya tıkla</div>
-  <div class="tset" id="tsetHarita" data-k="harita">
-    <div class="r"><span>Yakın</span><input type="range" data-a="z" min="1" max="4" step=".02" value="1"><b>1.00×</b></div>
-    <div class="r"><span>Yatay</span><input type="range" data-a="x" min="-100" max="100" step=".5" value="0"><b>0%</b></div>
-    <div class="r"><span>Dikey</span><input type="range" data-a="y" min="-100" max="100" step=".5" value="0"><b>0%</b></div>
-    <button data-reset="1">Sıfırla</button>
-  </div>
-  <label>Bölge maskesi <span style="text-transform:none;letter-spacing:0;font-weight:600;color:#6f8299">— şeffaf PNG, isteğe bağlı</span></label>
-  <div class="drop" id="dropMask">Sürükle-bırak veya tıkla</div>
-  <div style="font-size:12px;line-height:1.5;color:#6f8299;margin-top:6px">Haritanın üstüne binen, mahalle/ilçe sınırının boyalı hâli. Video boru hattı bunu üretiyor; yoksa boş bırak.</div>
-  <div class="tset" id="tsetMaske" data-k="maske">
-    <div class="r"><span>Yakın</span><input type="range" data-a="z" min="1" max="4" step=".02" value="1"><b>1.00×</b></div>
-    <div class="r"><span>Yatay</span><input type="range" data-a="x" min="-100" max="100" step=".5" value="0"><b>0%</b></div>
-    <div class="r"><span>Dikey</span><input type="range" data-a="y" min="-100" max="100" step=".5" value="0"><b>0%</b></div>
-    <button data-reset="1">Sıfırla</button>
-  </div>
-  <label>2. görsel (karşılaştırma)</label>
-  <div class="drop" id="dropMap2">Sürükle-bırak veya tıkla</div>
-  <div class="tset" id="tsetHarita2" data-k="harita2">
-    <div class="r"><span>Yakın</span><input type="range" data-a="z" min="1" max="4" step=".02" value="1"><b>1.00×</b></div>
-    <div class="r"><span>Yatay</span><input type="range" data-a="x" min="-100" max="100" step=".5" value="0"><b>0%</b></div>
-    <div class="r"><span>Dikey</span><input type="range" data-a="y" min="-100" max="100" step=".5" value="0"><b>0%</b></div>
-    <button data-reset="1">Sıfırla</button>
-  </div>
-
-  <label>Kullanıcı adı</label>
-  <input type="text" id="hesap" value="@metrekareplus">
-
-  <div class="check"><input type="checkbox" id="kilavuz"> <span>Kılavuzları göster (alt %20 + ızgara kırpma)</span></div>
-  <div id="warn" style="font-size:13px;line-height:1.5;color:#FF9A8B;margin-top:12px"></div>
+  <div class="check"><input type="checkbox" id="kil"> <span>Güvenli alanı göster (PNG'ye girmez)</span></div>
 
   <button id="dl">PNG indir</button>
-  <div id="note">Kılavuzlar açıkken indirme de çerçeveli olur — yayına gidecek kapakta kapat.<br>
-  Görseli önizlemede tek parmakla kaydır, iki parmakla yakınlaştır (masaüstünde sürükle / tekerlek).</div>
+  <div id="note">Fotoğrafı önizlemede tek parmakla kaydır, iki parmakla yakınlaştır (masaüstünde sürükle / tekerlek).</div>
 
-  <div id="a2hs">
-    <b>Uygulama gibi kullan:</b> alttaki <b>Paylaş</b> simgesine bas → <b>Ana Ekrana Ekle</b>.
-    Tam ekran açılır, Safari çubukları kaybolur, çevrimdışı da açılır.
-    <button id="a2hsClose">Anladım</button>
-  </div>
+  <div id="a2hs"><b>Uygulama gibi kullan:</b> Safari'de <b>Paylaş</b> → <b>Ana Ekrana Ekle</b>.
+    <br><button class="btn2" id="a2hsClose">Anladım</button></div>
 </div>
 
-<div id="stage"><div id="frame"><div id="cover"></div></div></div>
+<div id="stage"><div id="frame">
+  <canvas id="cv" width="1080" height="1920"></canvas>
+  <div class="g" id="g45"></div><div class="g" id="gbot"></div>
+</div></div>
 
 <div id="save">
   <img id="saveImg" alt="kapak">
-  <p id="saveHint">Görsele uzun bas → <b>Fotoğraflara Kaydet</b>. Başka uygulamaya göndermene gerek yok.</p>
+  <p>Görsele uzun bas → <b>Fotoğraflara Kaydet</b>.</p>
   <button id="saveClose">Kapat</button>
 </div>
 
 <script>
-/* Bu dosya pipeline/cover_template.html ile aynı çizim mantığını taşır.
-   Şablonda bir değişiklik yaparsan buraya da taşı (PALETTES / FORMATS / build). */
-
 const LOGO = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABkEAAAYnCAYAAADbP9p7AAAACXBIWXMAABYlAAAWJQFJUiTwAAAgAElEQVR4nOzcsVEbURSG0YtHCZEpRRmhUEI9bsEdUA+J1yEZ7sAlkBGuW8Az1jz0+ZwK/nTvN/tu9n0fAAAAAICPeH++P87M3eodIa+3jy9vq0dA1WH1AAAAAADgqjzNzGn1iJDzzGyrR0DVl9UDAAAAAAAALkEEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSbvZ932bmtHoIAAAABJ1nZls94n/z/nz/MDM/Vu8AAJb77k8QAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJIOqwcE/ZqZt9UjAAAA+BR8H67xNjM/V4+AsOPMfF09IsQ9ES7n982+79vMnFYvCTnPzLZ6BAAAAABcwvvz/Tbuif/S+fbxZVs9Aqo8hwUAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAECSCAIAAAAAACSJIAAAAAAAQJIIAgAAAAAAJIkgAAAAAABAkggCAAAAAAAkiSAAAAAAAEDSYfUAAAAAAOCqfJuZu9UjQl5XD4AyEQQAAAAA+LDbxxdHe+BqeA4LAAAAAABIEkEAAAAAAIAkEQQAAAAAAEgSQQAAAAAAgCQRBAAAAAAASBJBAAAAAACAJBEEAAAAAABIEkEAAAAAAIAkEQQAAAAAAEgSQQAAAAAAgCQRBAAAAAAASBJBAAAAAACAJBEEAAAAAABIEkEAAAAAAIAkEQQAAAAAAEgSQQAAAAAAgCQRBAAAAAAASBJBAAAAAACAJBEEAAAAAABIEkEAAAAAAIAkEQQAAAAAAEgSQQAAAAAAgCQRBAAAAAAASBJBAAAAAACAJBEEAAAAAABIEkEAAAAAAIAkEQQAAAAAAEgSQQAAAAAAgCQRBAAAAAAASBJBAAAAAACAJBEEAAAAAABIEkEAAAAAAIAkEQQAAAAAAEgSQQAAAAAAgCQRBAAAAAAASBJBAAAAAACAJBEEAAAAAABIEkEAAAAAAIAkEQQAAAAAAEgSQQAAAAAAgCQRBAAAAAAASBJBAAAAAACAJBEEAAAAAABIEkEAAAAAAIAkEQQAAAAAAEgSQQAAAAAAgCQRBAAAAAAASBJBAAAAAACAJBEEAAAAAABIEkEAAAAAAIAkEQQAAAAAAEgSQQAAAAAAgCQRBAAAAAAASBJBAAAAAACAJBEEAAAAAABIEkEAAAAAAIAkEQQAAAAAAEgSQQAAAAAAgCQRBAAAAAAASBJBAAAAAACAJBEEAAAAAABIEkEAAAAAAIAkEQQAAAAAAEgSQQAAAAAAgCQRBAAAAAAASBJBAAAAAACAJBEEAAAAAABIEkEAAAAAAIAkEQQAAAAAAEgSQQAAAAAAgCQRBAAAAAAASBJBAAAAAACAJBEEAAAAAABIEkEAAAAAAIAkEQQAAAAAAEgSQQAAAAAAgCQRBAAAAAAASBJBAAAAAACAJBEEAAAAAABIEkEAAAAAAIAkEQQAAAAAAEgSQQAAAAAAgCQRBAAAAAAASBJBAAAAAACAJBEEAAAAAABIEkEAAAAAAIAkEQQA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AAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAgSQQBAAAAAACSRBAAAAAAACBJBAEAAAAAAJJEEAAAAAAAIEkEAQAAAAAAkkQQAAAAAAAg6WF6QNC/0wMAAAAAAAAnQQAAAAAAgCgRBAAAAAAASBJBAAAAAACAJBEEAAAAAABIEkEAAAAAAIAkEQQAAAAAAEgSQQAAAAAAgCQRBAAAAAAASBJBAAAAAACAJBEEAAAAAABIEkEAAAAAAIAkEQQAAAAAAEgSQQAAAAAAgCQRBAAAAAAASBJBAAAAAACAJBEEAAAAAABIEkEAAAAAAIAkEQQAAAAAAEgSQQAAAAAAgCQRBAAAAAAASBJBAAAAAACAJBEEAAAAAABIEkEAAAAAAIAkEQQAAAAAAEgSQQAAAAAAgCQRBAAAAAAASBJBAAAAAACAJBEEAAAAAABIEkEAAAAAAIAkEQQAAAAAAEgSQQAAAAAAgCQRBAAAAAAASBJBAAAAAACAJBEEAAAAAABIEkEAAAAAAIAkEQQAAAAAAEgSQQAAAAAAgCQRBAAAAAAASBJBAAAAAACAJBEEAAAAAABIEkEAAAAAAIAkEQQAAAAAAEgSQQAAAAAAgCQRBAAAAAAASBJBAAAAAACAJBEEAAAAAABIEkEAAAAAAIAkEQQAAAAAAEgSQQAAAAAAgCQRBAAAAAAASBJBAAAAAACAJBEEAAAAAABIEkEAAAAAAIAkEQQAAAAAAEgSQQAAAAAAgCQRBAAAAAAASBJBAAAAAACAJBEEAAAAAABIEkEAAAAAAIAkEQQAAAAAAEgSQQAAAAAAgCQRBAAAAAAASBJBAAAAAACAJBEEAAAAAABIEkEAAAAAAIAkEQQAAAAAAEgSQQAAAAAAgCQRBAAAAAAASBJBAAAAAACAJBEEAAAAAABIEkEAAAAAAIAkEQQAAAAAAEgSQQAAAAAAgCQRBAAAAAAASBJBAAAAAACAJBEEAAAAAABIEkEAAAAAAIAkEQQAAAAAAEgSQQAAAAAAgCQRBAAAAAAASBJBAAAAAACAJBEEAAAAAABIelhrnadHAAAAAAAA/N/+AzkXOxt06flbAAAAAElFTkSuQmCC";
 
-const PALETTES = {
-  deger:       { panel:"#0A243E", accent:"#FFC93C", fill:"#E8542E", label:"Değer analizi" },
-  yesil:       { panel:"#12351F", accent:"#C8E96A", fill:"#2E9E4F", label:"Yaşam rehberi" },
-  ulasim:      { panel:"#0B1F33", accent:"#7FD1FF", fill:"#2B6FE0", label:"Ulaşım analizi" },
-  mahalle:     { panel:"#0C2A2A", accent:"#A8E6D8", fill:"#0E8E7F", label:"Mahalle profili" },
-  donusum:     { panel:"#26150A", accent:"#FFB03A", fill:"#C2551C", label:"Dönüşüm analizi" },
-  karsilastir: { panel:"#101A2B", accent:"#FFD166", fill:"#4C6EF5", label:"Karşılaştırma" },
-  fiyat:       { panel:"#0A243E", accent:"#FFC93C", fill:"#E8542E", label:"Fiyat analizi" },
-  yeni:        { panel:"#0E2438", accent:"#6EE7C8", fill:"#137A6B", label:"Yeni gelişme" },
-  piyasa:      { panel:"#0A1A2E", accent:"#FFC93C", fill:"#3D7DD8", label:"Piyasa gündemi" },
-  arsa:        { panel:"#26220E", accent:"#E4D06A", fill:"#A08430", label:"İmar analizi" },
-  kira:        { panel:"#1B1430", accent:"#C9B0FF", fill:"#6E4BC7", label:"Kira analizi" },
-  risk:        { panel:"#2A0F12", accent:"#FF9A8B", fill:"#D7263D", label:"Risk analizi" }
+/* ---- sabitler (1080×1920) ---- */
+const W = 1080, H = 1920;
+const SAFE_TOP = 285;               /* 4:5 orta kırpma: y 285–1635 */
+const SAFE_BOT = 1920 - 384;        /* alt 384 px Reels arayüzü → 1536 (4:5'ten daha sıkı) */
+const PAD = 48;                     /* güvenli alanın içinden iç boşluk */
+const TOP = SAFE_TOP + PAD;         /* 333: köşe çizgisi + logo üstü */
+const BOT = SAFE_BOT - PAD;         /* 1488: alt köşe çizgisi + kullanıcı adı */
+const SIDE = 72, LOGO_H = 96, LOGO_R = 96;
+const ETIKETLER = ["KONUT KREDİSİ", "FAİZ", "KİRA", "KONUT PİYASASI", "KENTSEL DÖNÜŞÜM",
+                   "DEPREM", "İMAR", "ULAŞIM", "İSTANBUL"];
+const UP = s => String(s || "").toLocaleUpperCase("tr");
+const $ = id => document.getElementById(id);
+
+const sel = $("etiket");
+sel.appendChild(new Option("— yok —", ""));
+ETIKETLER.forEach(e => sel.appendChild(new Option(e, e)));
+
+const state = { img: null, z: 1, x: 0, y: 0 };
+const cv = $("cv"), cx = cv.getContext("2d");
+let logoImg = null;
+(() => { const im = new Image(); im.onload = () => { logoImg = im; render(); }; im.src = LOGO; })();
+
+const setFont = (c, fam, wt, size, ls) => {
+  c.font = `${wt} ${size}px "${fam}", sans-serif`;
+  if ("letterSpacing" in c) c.letterSpacing = ((ls || 0) * size).toFixed(2) + "px";
 };
 
-const FORMATS = {
-  reels: { w:1080, h:1920, safeBottom:384, mapH:1150, maskTop:560, maskH:460, headerTop:132,
-           brTop:132, brBottom:400, titleBottom:470, titleH:430, handleBottom:404, side:96,
-           titleMax:92, titleMin:58, oswMax:118, oswMin:72, region:100, kicker:50, logo:108 },
-  feed:  { w:1080, h:1350, safeBottom:0, mapH:800, maskTop:360, maskH:380, headerTop:84,
-           brTop:84, brBottom:84, titleBottom:200, titleH:380, handleBottom:120, side:84,
-           titleMax:84, titleMin:52, oswMax:106, oswMin:66, region:92, kicker:44, logo:96 },
-  kare:  { w:1080, h:1080, safeBottom:0, mapH:660, maskTop:260, maskH:330, headerTop:72,
-           brTop:72, brBottom:72, titleBottom:168, titleH:300, handleBottom:96, side:76,
-           titleMax:74, titleMin:46, oswMax:94, oswMin:58, region:82, kicker:40, logo:86 }
-};
-
-const el = (t, s, x) => { const n = document.createElement(t); if (s) n.setAttribute("style", s); if (x != null) n.textContent = x; return n; };
-
-/* Türkçe büyük harf + tek ölçüm kaynağı: önizleme ile indirilen PNG aynı satırları verir */
-const LH = 1.26; /* başlık satır aralığı — çengel (Ç,Ş,Ğ) ile nokta (İ,i) satırları değmesin */
-const UP = s => String(s == null ? "" : s).toLocaleUpperCase("tr");
-const MEAS = document.createElement("canvas").getContext("2d");
-const measure = (family, weight, size, text) => {
-  MEAS.font = `${weight} ${size}px ${family}`;
-  return MEAS.measureText(UP(text)).width;
-};
-
-function layoutTitle(box, text, accentPhrase, opts) {
-  const maxW = box.w - box.left - box.right;
-  const accentWords = (accentPhrase || "").trim().toLocaleLowerCase("tr").split(/\s+/).filter(Boolean);
-  /* Enter ile bölünen satırlara SAYGI: her paragraf kendi içinde sarılır */
-  const paras = String(text || "").split(/\r?\n/).map(t => t.trim());
-  while (paras.length && !paras[paras.length - 1]) paras.pop();
-  if (!paras.some(Boolean)) return { size: opts.min, lines: [], accentWords };
-
-  const limit = opts.maxLines || 5;
-  const floor = Math.max(22, Math.round(opts.min * 0.5));
-  let last = null;
-  for (let size = opts.max; size >= floor; size -= 2) {
-    const width = w => measure(opts.family, opts.weight, size, w);
+/* başlık: Enter'a saygılı sarma + en büyük sığan punto */
+function fitTitle(c, text, maxW, maxH) {
+  const paras = String(text || "").split(/\r?\n/).map(t => UP(t.trim())).filter(Boolean);
+  if (!paras.length) return null;
+  for (let size = 132; size >= 48; size -= 2) {
+    setFont(c, "Archivo Black", 400, size, 0);
     const lines = []; let ok = true;
-    for (const para of paras) {
-      if (!para) { lines.push(""); continue; }
+    for (const p of paras) {
       let cur = "";
-      for (const w of para.split(/\s+/).filter(Boolean)) {
-        const cand = cur ? cur + " " + w : w;
-        if (width(cand) <= maxW) cur = cand;
-        else if (!cur) { ok = false; break; }
-        else { lines.push(cur); cur = w; }
+      for (const w of p.split(/\s+/)) {
+        if (c.measureText(w).width > maxW) { ok = false; break; }
+        const t = cur ? cur + " " + w : w;
+        if (c.measureText(t).width <= maxW) cur = t; else { lines.push(cur); cur = w; }
       }
       if (!ok) break;
       if (cur) lines.push(cur);
     }
-    if (!ok) continue;
-    last = { size, lines, accentWords };
-    if (lines.length <= limit && lines.length * size * LH <= box.height) return last;
+    const lh = size * 1.18;
+    if (ok && lines.length <= 5 && lines.length * lh <= maxH) return { size, lines, lh };
   }
-  return last || { size: floor, lines: paras, accentWords };
+  setFont(c, "Archivo Black", 400, 48, 0);
+  return { size: 48, lines: paras, lh: 48 * 1.18 };
 }
 
-function titleBlock(d, p, box, opts) {
-  const t = layoutTitle(box, d.baslik, d.vurgu, opts);
-  const wrap = el("div", `position:absolute;left:${box.left}px;right:${box.right}px;bottom:${box.bottom}px`);
-  const phrase = (d.vurgu || "").trim();
-  const lower = s => String(s).toLocaleLowerCase("tr");
-  t.lines.forEach(line => {
-    const row = el("div", `font-family:${opts.family};font-size:${t.size}px;font-weight:${opts.weight};`
-      + `line-height:${LH};text-transform:uppercase;white-space:nowrap;color:#fff;`
-      + "text-shadow:0 6px 26px rgba(0,0,0,.78)");
-    const add = (txt, on) => { if (txt) row.appendChild(el("span", on ? `color:${p.accent}` : "", txt)); };
-    let handled = false;
-    if (phrase) {
-      const i = lower(line).indexOf(lower(phrase));
-      if (i >= 0) {
-        /* vurgu aynı satırda: yalnız o kelimeler boyanır */
-        add(line.slice(0, i), false);
-        add(line.slice(i, i + phrase.length), true);
-        add(line.slice(i + phrase.length), false);
-        handled = true;
-      } else if (t.accentWords.length) {
-        /* vurgu iki satıra bölünmüş: kelime kelime eşleştir */
-        line.split(/(\s+)/).forEach(part => {
-          add(part, /\S/.test(part) && t.accentWords.includes(lower(part).replace(/[?.,:;!"']/g, "")));
-        });
-        handled = true;
-      }
+function paint(c, d) {
+  c.save();
+  c.textAlign = "left"; c.textBaseline = "alphabetic";
+  /* zemin */
+  const bg = c.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, "#1a1030"); bg.addColorStop(1, "#06070d");
+  c.fillStyle = bg; c.fillRect(0, 0, W, H);
+  if (d.img) {
+    const iw = d.img.naturalWidth, ih = d.img.naturalHeight;
+    const s = Math.max(W / iw, H / ih) * d.z;
+    const dw = iw * s, dh = ih * s;
+    c.drawImage(d.img, (W - dw) / 2 + d.x, (H - dh) / 2 + d.y, dw, dh);
+  }
+  /* karartma: düz + üst/alt yumuşak koyulaşma */
+  const a = d.dark / 100;
+  c.fillStyle = `rgba(6,8,16,${a})`; c.fillRect(0, 0, W, H);
+  const vg = c.createLinearGradient(0, 0, 0, H);
+  vg.addColorStop(0, "rgba(6,8,16,.35)"); vg.addColorStop(.3, "rgba(6,8,16,0)");
+  vg.addColorStop(.7, "rgba(6,8,16,0)"); vg.addColorStop(1, "rgba(6,8,16,.55)");
+  c.fillStyle = vg; c.fillRect(0, 0, W, H);
+
+  /* imza: köşe çizgileri (3px, kol 372 / bacak 186) */
+  c.fillStyle = "rgba(255,255,255,.85)";
+  c.fillRect(68, TOP, 372, 3); c.fillRect(68, TOP, 3, 186);
+  c.fillRect(W - 68 - 372, BOT - 3, 372, 3); c.fillRect(W - 68 - 3, BOT - 186, 3, 186);
+  /* logo sağ üst */
+  if (logoImg) {
+    const lw = LOGO_H * logoImg.naturalWidth / logoImg.naturalHeight;
+    c.drawImage(logoImg, W - LOGO_R - lw, TOP + 24, lw, LOGO_H);
+  }
+  /* kullanıcı adı sol alt */
+  setFont(c, "Montserrat", 600, 28, .16);
+  c.fillStyle = "rgba(255,255,255,.8)";
+  c.fillText("@metrekareplus", 96, BOT - 8);
+
+  /* içerik bloğu: etiket (varsa) + mor bant başlık, dikeyde ortalı */
+  const zoneTop = TOP + 24 + LOGO_H + 56, zoneBot = BOT - 186 - 24;
+  const bandPadX = 44, bandPadY = 38, bandW = W - 2 * SIDE;
+  const hasEt = !!d.etiket, etH = hasEt ? 30 + 30 : 0;   /* yazı + boşluk */
+  const t = fitTitle(c, d.baslik, bandW - 2 * bandPadX, zoneBot - zoneTop - etH - 2 * bandPadY);
+  if (t) {
+    const bandH = t.lines.length * t.lh + 2 * bandPadY - (t.lh - t.size) * 0.6;
+    const blockH = etH + bandH;
+    const y0 = Math.round((zoneTop + zoneBot) / 2 - blockH / 2);
+    if (hasEt) {
+      setFont(c, "Montserrat", 800, 30, .18);
+      c.shadowColor = "rgba(0,0,0,.7)"; c.shadowBlur = 16;
+      c.fillStyle = "#E2B3FF"; const g = "GÜNDEM";
+      c.fillText(g, SIDE + 4, y0 + 26);
+      const gw = c.measureText(g + "  ").width;
+      c.fillStyle = "#fff"; c.fillText("·  " + d.etiket, SIDE + 4 + gw, y0 + 26);
+      c.shadowColor = "transparent"; c.shadowBlur = 0;
     }
-    if (!handled) add(line, false);
-    if (!line) row.textContent = "\u00A0";
-    wrap.appendChild(row);
-  });
-  return wrap;
+    const by = y0 + etH;
+    const gr = c.createLinearGradient(SIDE, 0, SIDE + bandW, 0);
+    gr.addColorStop(0, "#C04CFF"); gr.addColorStop(1, "#8A2BD0");
+    c.shadowColor = "rgba(0,0,0,.45)"; c.shadowBlur = 40; c.shadowOffsetY = 12;
+    c.fillStyle = gr; c.fillRect(SIDE, by, bandW, bandH);
+    c.shadowColor = "transparent"; c.shadowBlur = 0; c.shadowOffsetY = 0;
+    setFont(c, "Archivo Black", 400, t.size, 0);
+    c.fillStyle = "#fff";
+    t.lines.forEach((ln, i) => c.fillText(ln, SIDE + bandPadX, by + bandPadY + i * t.lh + t.size * 0.86));
+  }
+  c.restore();
 }
 
-function brackets(G) {
-  const f = document.createDocumentFragment();
-  const arm = 372 * (G.w / 1080), leg = 186 * (G.h / 1920);
-  const line = s => f.appendChild(el("div", s + ";background:rgba(255,255,255,.85)"));
-  line(`position:absolute;top:${G.brTop}px;left:68px;width:${arm}px;height:3px`);
-  line(`position:absolute;top:${G.brTop}px;left:68px;width:3px;height:${leg}px`);
-  line(`position:absolute;bottom:${G.brBottom}px;right:68px;width:${arm}px;height:3px`);
-  line(`position:absolute;bottom:${G.brBottom}px;right:68px;width:3px;height:${leg}px`);
-  return f;
+const collect = () => ({ img: state.img, z: state.z, x: state.x, y: state.y,
+  baslik: $("baslik").value, etiket: sel.value, dark: +$("dark").value });
+
+let raf = 0;
+function render() {
+  cancelAnimationFrame(raf);
+  raf = requestAnimationFrame(() => { paint(cx, collect()); persist(); });
+  $("zv").textContent = state.z.toFixed(2) + "×";
+  $("dv").textContent = $("dark").value + "%";
 }
 
-function header(G, p, label, weight, boxed) {
-  const row = el("div", `position:absolute;top:${G.headerTop}px;left:${G.side + 16}px;right:${G.side}px;`
-    + "display:flex;justify-content:flex-end;align-items:center");
-  /* Kategori adı kapağın üzerine YAZILMAZ — paleti belirler, o kadar.
-     Logo her kapakta AYNI: beyaz m2 + logo sarısı. Palete göre değişmez. */
-  const mark = el("img", `height:${G.logo}px;width:auto;display:block`);
-  mark.src = LOGO;
-  mark.alt = "m2+";
-  row.appendChild(mark);
-  return row;
-}
-
-const handle = (G, weight, name) => el("div",
-  `position:absolute;left:${G.side}px;bottom:${G.handleBottom}px;font-family:Montserrat;font-size:28px;`
-  + `font-weight:${weight};letter-spacing:.16em;color:rgba(255,255,255,.8)`, name || "@metrekareplus");
-
-/* Görsel hiç esnetilmez: cover ile oran korunur, taşan kısım kırpılır.
-   TR ile hangi kısmın görüneceği (yakınlaştırma + kaydırma) seçilir. */
-const img = (src, style, key) => {
-  const box = el("div", `position:absolute;${style};overflow:hidden`);
-  const inner = el("div", "position:absolute;inset:0;background-repeat:no-repeat;"
-    + `background-image:url("${src}");background-size:cover;background-position:center`);
-  const t = key && TR[key];
-  if (t) inner.style.transform = `translate(${t.x}%, ${t.y}%) scale(${t.z})`;
-  box.appendChild(inner);
-  box.inner = inner;
-  return box;
-};
-
-const scrim = s => el("div", `position:absolute;inset:0;background:linear-gradient(180deg,${s})`);
-
-function guides(G) {
-  const f = document.createDocumentFragment();
-  if (G.safeBottom) {
-    f.appendChild(el("div", `position:absolute;left:0;right:0;bottom:0;height:${G.safeBottom}px;`
-      + "border-top:2px dashed rgba(255,201,60,.75);"
-      + "background:repeating-linear-gradient(45deg, rgba(255,201,60,.07) 0 14px, transparent 14px 28px)"));
-    f.appendChild(el("div", `position:absolute;top:${G.h - G.safeBottom + 22}px;left:${G.side}px;`
-      + "font-family:Montserrat;font-size:24px;font-weight:700;letter-spacing:.14em;color:rgba(255,201,60,.92)",
-      "ALT %20 — PLATFORM ARAYÜZÜ"));
-  }
-  const win = (ratio, color, label) => {
-    const hh = Math.round(G.w * ratio), top = Math.round((G.h - hh) / 2);
-    f.appendChild(el("div", `position:absolute;left:0;right:0;top:${top}px;height:${hh}px;border:2px dashed ${color}`));
-    f.appendChild(el("div", `position:absolute;top:${top + 14}px;right:${G.side}px;font-family:Montserrat;`
-      + `font-size:22px;font-weight:700;letter-spacing:.14em;color:${color}`, label));
-  };
-  if (G.h > G.w) { win(1.25, "rgba(127,209,255,.85)", "IZGARA 4:5"); win(1.0, "rgba(255,154,139,.9)", "IZGARA 1:1"); }
-  return f;
-}
-
-function build(d) {
-  const G = FORMATS[d.format] || FORMATS.reels;
-  const p = Object.assign({}, PALETTES[d.kategori] || PALETTES.deger);
-  const cover = document.getElementById("cover");
-  Object.keys(BOXES).forEach(k => delete BOXES[k]);
-  cover.innerHTML = "";
-  cover.style.width = G.w + "px";
-  cover.style.height = G.h + "px";
-  cover.style.background = p.panel;
-  cover.setAttribute("lang", "tr");
-
-  const mont = { family:"Montserrat", weight:900, max:G.titleMax, min:G.titleMin, maxLines:5 };
-  const osw  = { family:"Archivo Black", weight:400, max:G.oswMax, min:G.oswMin, maxLines:5 };
-  const tbox = { w:G.w, left:G.side, right:G.side + 14, bottom:G.titleBottom, height:G.titleH };
-
-  if (d.yerlesim === "gundem") {
-    /* gündemde de arka plan görseli kullanılabilir — verilmezse düz palet + çizgi dokusu */
-    if (d.harita) {
-      cover.appendChild(reg(img(d.harita, `top:0;left:0;width:${G.w}px;height:${G.h}px`, "harita"), "harita", G.w, G.h));
-      cover.appendChild(scrim("rgba(6,14,26,.62) 0%, rgba(6,14,26,.42) 38%, rgba(6,14,26,.74) 70%, rgba(6,14,26,.95) 100%"));
-    }
-    cover.appendChild(el("div", "position:absolute;inset:0;background:repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 2px, transparent 2px 108px)"));
-    cover.appendChild(el("div", `position:absolute;top:0;left:0;right:0;height:14px;background:${p.accent}`));
-    cover.appendChild(brackets(G));
-    cover.appendChild(header(G, p, d.etiket || p.label, 500, false));
-    if (d.kicker) cover.appendChild(el("div", `position:absolute;left:${G.side + 16}px;right:${G.side + 16}px;`
-      + `bottom:${G.titleBottom + G.titleH}px;font-family:Oswald;font-size:${G.kicker}px;font-weight:300;`
-      + "letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.72)", d.kicker));
-    cover.appendChild(titleBlock(d, p, Object.assign({}, tbox, { left:G.side + 16, right:G.side + 16 }), osw));
-    cover.appendChild(handle(G, 400, d.hesap));
-    if (d.kilavuz) cover.appendChild(guides(G));
-    return;
-  }
-
-  if (d.yerlesim === "karsilastirma") {
-    const half = Math.round((G.h - G.safeBottom) / 2);
-    if (d.harita)  cover.appendChild(reg(img(d.harita,  `top:0;left:0;right:0;height:${half}px`, "harita"), "harita", G.w, half));
-    if (d.harita2) cover.appendChild(reg(img(d.harita2, `top:${half}px;left:0;right:0;height:${half}px`, "harita2"), "harita2", G.w, half));
-    cover.appendChild(el("div", `position:absolute;top:0;left:0;right:0;height:${half}px;`
-      + "background:linear-gradient(180deg, rgba(6,14,26,.74) 0%, rgba(6,14,26,.3) 45%, rgba(6,14,26,.6) 100%)"));
-    cover.appendChild(el("div", `position:absolute;top:${half}px;left:0;right:0;height:${half}px;`
-      + "background:linear-gradient(180deg, rgba(6,14,26,.6) 0%, rgba(6,14,26,.32) 45%, rgba(6,14,26,.92) 100%)"));
-    /* iki görselin ayrımı: köşe çizgileriyle aynı dilde, 4 px beyaz bant */
-    cover.appendChild(el("div", `position:absolute;top:${half - 2}px;left:0;right:0;height:4px;`
-      + "background:rgba(255,255,255,.9);box-shadow:0 0 26px rgba(0,0,0,.6)"));
-    cover.appendChild(el("div", `position:absolute;top:${half - 2}px;left:0;width:${Math.round(G.w * 0.28)}px;height:4px;background:${p.accent}`));
-    cover.appendChild(brackets(G));
-    cover.appendChild(header(G, p, d.etiket || "Karşılaştırma", 700, true));
-    const ns = Math.round(G.region * 1.18);
-    const side = (top, text, color) => el("div", `position:absolute;top:${top}px;left:${G.side}px;right:${G.side}px;`
-      + `font-family:Montserrat;font-size:${ns}px;font-weight:900;line-height:1;text-transform:uppercase;`
-      + `color:${color};text-shadow:0 8px 30px rgba(0,0,0,.85)`, text);
-    cover.appendChild(side(half - Math.round(ns * 2.5), d.bolge_adi || "", "#fff"));
-    cover.appendChild(side(half + Math.round(ns * 1.3), d.bolge2 || "", p.accent));
-    const vs = el("div", `position:absolute;top:${half - 55}px;left:0;right:0;display:flex;justify-content:center`);
-    const disc = el("div", `width:110px;height:110px;border-radius:50%;background:${p.accent};display:flex;`
-      + "align-items:center;justify-content:center;box-shadow:0 12px 40px rgba(0,0,0,.6)");
-    disc.appendChild(el("span", `font-family:Montserrat;font-size:44px;font-weight:900;color:${p.panel}`, "VS"));
-    vs.appendChild(disc); cover.appendChild(vs);
-    const sub = d.alt_baslik || d.baslik;
-    if (sub) cover.appendChild(titleBlock({ baslik:sub, vurgu:d.vurgu }, p,
-      Object.assign({}, tbox, { height: Math.round(G.titleH * 0.42) }),
-      { family:"Montserrat", weight:800, max: Math.round(G.titleMax * 0.74), min: Math.round(G.titleMax * 0.54), maxLines:2 }));
-    cover.appendChild(handle(G, 600, d.hesap));
-    if (d.kilavuz) cover.appendChild(guides(G));
-    return;
-  }
-
-  if (d.harita) cover.appendChild(reg(img(d.harita, `top:0;left:0;right:0;height:${G.mapH}px`, "harita"), "harita", G.w, G.mapH));
-  if (d.maske) {
-    const m = img(d.maske, `top:${G.maskTop}px;left:80px;right:80px;height:${G.maskH}px`, "maske");
-    m.inner.style.backgroundSize = "contain"; m.style.opacity = ".68";
-    m.style.filter = "drop-shadow(0 0 24px rgba(0,0,0,.55))";
-    cover.appendChild(reg(m, "maske", G.w - 160, G.maskH));
-  }
-  cover.appendChild(scrim("rgba(6,14,26,.55) 0%, rgba(6,14,26,.28) 34%, rgba(6,14,26,.62) 68%, rgba(6,14,26,.93) 100%"));
-  cover.appendChild(brackets(G));
-  cover.appendChild(header(G, p, d.etiket || p.label, 700, true));
-
-  if (d.bolge_adi) {
-    const h = el("div", "position:absolute;top:47%;left:0;right:0;text-align:center;transform:rotate(-6deg)");
-    h.appendChild(el("span", `font-family:Montserrat;font-size:${G.region}px;font-weight:800;letter-spacing:.03em;`
-      + "text-transform:uppercase;color:#fff;text-shadow:0 6px 28px rgba(0,0,0,.85), 0 2px 4px rgba(0,0,0,.95)", d.bolge_adi));
-    cover.appendChild(h);
-  }
-
-  let box = tbox;
-  if (d.yerlesim === "liste") {
-    const badge = el("div", `position:absolute;left:${G.side}px;bottom:${G.titleBottom + Math.round(G.titleH * 0.74)}px;`
-      + `background:${p.accent};padding:14px 30px;border-radius:8px`);
-    badge.appendChild(el("span", "font-family:Montserrat;font-size:38px;font-weight:900;letter-spacing:.08em;"
-      + `text-transform:uppercase;color:${p.panel}`, d.rozet || "Sıralama"));
-    cover.appendChild(badge);
-    box = Object.assign({}, tbox, { height: Math.round(G.titleH * 0.7) });
-  }
-
-  const opts = d.yerlesim === "vurgu"
-    ? Object.assign({}, osw, { max: Math.round(G.oswMax * 1.14), min: Math.round(G.oswMin * 1.1) })
-    : (d.yerlesim === "liste" ? Object.assign({}, mont, { max: Math.round(G.titleMax * 0.91), min: G.titleMin - 4 }) : mont);
-  cover.appendChild(titleBlock(d, p, box, opts));
-  cover.appendChild(handle(G, d.yerlesim === "vurgu" ? 400 : 600, d.hesap));
-  if (d.kilavuz) cover.appendChild(guides(G));
-}
-
-/* ---------------- form ---------------- */
-const state = { format:"reels", yerlesim:"soru", kategori:"ulasim", harita:null, maske:null, harita2:null };
-const TR = { harita:{z:1,x:0,y:0}, maske:{z:1,x:0,y:0}, harita2:{z:1,x:0,y:0} };
-const BOXES = {};
-const reg = (node, key, w, h) => {
-  BOXES[key] = { w, h, left: parseFloat(node.style.left) || 0, top: parseFloat(node.style.top) || 0 };
-  return node;
-};
-const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
-const $ = id => document.getElementById(id);
-
-const kat = $("kat");
-Object.keys(PALETTES).forEach(k => {
-  const o = document.createElement("option");
-  o.value = k; o.textContent = PALETTES[k].label + "  (" + k + ")";
-  if (k === "ulasim") o.selected = true;
-  kat.appendChild(o);
-});
-
-function collect() {
-  return Object.assign({}, state, {
-    baslik: $("baslik").value,
-    vurgu: $("vurgu").value,
-    bolge_adi: $("bolge").value.trim() || null,
-    bolge2: $("bolge2").value.trim() || null,
-    rozet: $("rozet").value.trim() || null,
-    kicker: $("kicker").value.trim() || null,
-    alt_baslik: $("alt").value.trim() || null,
-    hesap: $("hesap").value,
-    kategori: kat.value,
-    kilavuz: $("kilavuz").checked
-  });
-}
-
+/* önizleme ölçeği + güvenli alan kılavuzu */
 function fit() {
-  const G = FORMATS[state.format];
-  const stage = $("stage");
-  const s = Math.max(0.05, Math.min((stage.clientWidth - 48) / G.w, (stage.clientHeight - 48) / G.h));
-  $("cover").style.transform = "scale(" + s + ")";
-  const frame = $("frame");
-  frame.style.width = Math.round(G.w * s) + "px";
-  frame.style.height = Math.round(G.h * s) + "px";
+  const st = $("stage"), cs = getComputedStyle(st);
+  const aw = st.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  const ah = st.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+  const k = Math.min(aw / W, ah / H);
+  const f = $("frame"); f.style.width = W * k + "px"; f.style.height = H * k + "px";
+  $("g45").style.top = SAFE_TOP * k + "px"; $("g45").style.height = (1350 * k) + "px";
+  $("gbot").style.height = 384 * k + "px";
+  fit.k = k;
 }
 
-const FIELDS = ["baslik","vurgu","bolge","bolge2","rozet","kicker","alt","hesap"];
-const STORE = "mkp-kapak-studyosu";
-
+/* kayıt (fotoğraf hariç) */
+const STORE = "mkp-kapak-sade";
 function persist() {
-  const o = { state: { format: state.format, yerlesim: state.yerlesim }, kat: kat.value, kilavuz: $("kilavuz").checked, tr: TR };
-  FIELDS.forEach(f => o[f] = $(f).value);
-  try { localStorage.setItem(STORE, JSON.stringify(o)); } catch (e) {}
+  try { localStorage.setItem(STORE, JSON.stringify({ b: $("baslik").value, e: sel.value, d: $("dark").value, k: $("kil").checked })); } catch (e) {}
 }
-
 function restore() {
   let o; try { o = JSON.parse(localStorage.getItem(STORE) || "null"); } catch (e) {}
   if (!o) return;
-  FIELDS.forEach(f => { if (typeof o[f] === "string") $(f).value = o[f]; });
-  if (o.kat) kat.value = o.kat;
-  $("kilavuz").checked = !!o.kilavuz;
-  if (o.tr) Object.keys(TR).forEach(k => { if (o.tr[k]) TR[k] = o.tr[k]; });
-  if (o.state) {
-    state.format = o.state.format || state.format;
-    state.yerlesim = o.state.yerlesim || state.yerlesim;
-  }
-  $("fmt").value = state.format;
-  $("lay").value = state.yerlesim;
+  if (typeof o.b === "string") $("baslik").value = o.b;
+  if (ETIKETLER.includes(o.e) || o.e === "") sel.value = o.e;
+  if (o.d != null) $("dark").value = o.d;
+  $("kil").checked = !!o.k;
 }
 
-function render() {
-  const d = collect();
-  build(d);
-  const dup = d.bolge_adi && d.baslik.toLowerCase().includes(d.bolge_adi.toLowerCase());
-  $("warn").textContent = dup
-    ? "Bölge adı hem haritada hem başlıkta: birini kaldır (görsel kimlik kuralı)."
-    : "";
-  persist();
-  requestAnimationFrame(fit);
+/* fotoğraf seçme */
+function loadFile(file) {
+  if (!file || !/^image\//.test(file.type)) return;
+  const r = new FileReader();
+  r.onload = () => { const im = new Image(); im.onload = () => {
+    state.img = im; state.z = 1; state.x = 0; state.y = 0; $("z").value = 1;
+    $("drop").textContent = "Fotoğraf yüklendi — değiştirmek için dokun"; render(); }; im.src = r.result; };
+  r.readAsDataURL(file);
 }
+$("drop").addEventListener("click", () => $("file").click());
+$("file").addEventListener("change", e => loadFile(e.target.files[0]));
+["dragover", "dragenter"].forEach(t => $("drop").addEventListener(t, e => { e.preventDefault(); $("drop").classList.add("on"); }));
+["dragleave", "drop"].forEach(t => $("drop").addEventListener(t, e => { e.preventDefault(); $("drop").classList.remove("on"); }));
+$("drop").addEventListener("drop", e => loadFile(e.dataTransfer.files[0]));
 
-$("fmt").addEventListener("change", () => { state.format = $("fmt").value; render(); });
-$("lay").addEventListener("change", () => { state.yerlesim = $("lay").value; render(); });
-FIELDS.forEach(id => $(id).addEventListener("input", render));
-kat.addEventListener("change", render);
-$("kilavuz").addEventListener("change", render);
-window.addEventListener("resize", fit);
-
-function dropZone(node, key) {
-  const pick = () => {
-    const inp = document.createElement("input");
-    inp.type = "file"; inp.accept = "image/*";
-    inp.onchange = () => inp.files[0] && read(inp.files[0]);
-    inp.click();
-  };
-  const read = file => {
-    const fr = new FileReader();
-    fr.onload = () => {
-      state[key] = fr.result;
-      node.innerHTML = "";
-      const im = document.createElement("img"); im.src = fr.result;
-      node.appendChild(document.createTextNode("Değiştirmek için tıkla"));
-      node.appendChild(im);
-      TR[key] = { z:1, x:0, y:0 };
-      syncTset(key);
-      render();
-    };
-    fr.readAsDataURL(file);
-  };
-  node.addEventListener("click", pick);
-  node.addEventListener("dragover", e => { e.preventDefault(); node.classList.add("on"); });
-  node.addEventListener("dragleave", () => node.classList.remove("on"));
-  node.addEventListener("drop", e => {
-    e.preventDefault(); node.classList.remove("on");
-    const f = e.dataTransfer.files[0]; if (f) read(f);
-  });
+/* kaydırma / yakınlaştırma */
+function clampPos() {
+  if (!state.img) return;
+  const iw = state.img.naturalWidth, ih = state.img.naturalHeight;
+  const s = Math.max(W / iw, H / ih) * state.z;
+  const mx = Math.max(0, (iw * s - W) / 2), my = Math.max(0, (ih * s - H) / 2);
+  state.x = Math.max(-mx, Math.min(mx, state.x)); state.y = Math.max(-my, Math.min(my, state.y));
 }
-dropZone($("dropMap"), "harita");
-dropZone($("dropMask"), "maske");
-dropZone($("dropMap2"), "harita2");
-
-/* ---------------- görsel yerleşimi: zoom + kaydırma ---------------- */
-const TSETS = { harita: $("tsetHarita"), maske: $("tsetMaske"), harita2: $("tsetHarita2") };
-
-function syncTset(key) {
-  const wrap = TSETS[key], t = TR[key];
-  wrap.classList.toggle("on", !!state[key]);
-  wrap.querySelectorAll("input[type=range]").forEach(inp => {
-    const a = inp.dataset.a;
-    inp.value = t[a];
-    inp.nextElementSibling.textContent = a === "z" ? t.z.toFixed(2) + "×" : Math.round(t[a]) + "%";
-  });
-}
-
-Object.keys(TSETS).forEach(key => {
-  const wrap = TSETS[key];
-  wrap.querySelectorAll("input[type=range]").forEach(inp => {
-    inp.addEventListener("input", () => {
-      TR[key][inp.dataset.a] = parseFloat(inp.value);
-      syncTset(key); render();
-    });
-  });
-  wrap.querySelector("[data-reset]").addEventListener("click", () => {
-    TR[key] = { z:1, x:0, y:0 }; syncTset(key); render();
-  });
-});
-
-/* ---------------- parmak hareketleri: tek parmak kaydırır, iki parmak yakınlaştırır ---------------- */
+function setZoom(z) { state.z = Math.max(1, Math.min(4, z)); $("z").value = state.z; clampPos(); render(); }
+$("z").addEventListener("input", e => setZoom(+e.target.value));
+$("reset").addEventListener("click", () => { state.x = 0; state.y = 0; setZoom(1); });
 (() => {
-  const frame = $("frame");
-  const pts = new Map();
-  let g = null;
-
-  const geo = () => {
-    const G = FORMATS[state.format], r = frame.getBoundingClientRect();
-    return { G, r, s: r.width / G.w };
-  };
-  const toCover = (ev, gz) => ({ x: (ev.clientX - gz.r.left) / gz.s, y: (ev.clientY - gz.r.top) / gz.s });
-  const hit = y => {
-    const order = state.yerlesim === "karsilastirma" ? ["harita2", "harita"] : ["maske", "harita"];
-    for (const k of order) {
-      const b = BOXES[k];
-      if (state[k] && b && y >= b.top && y <= b.top + b.h) return k;
-    }
-    return null;
-  };
-  const snapshot = () => {
-    const gz = geo();
-    const ps = [...pts.values()].map(ev => toCover(ev, gz));
-    if (!ps.length) { g = null; return; }
-    const key = hit(ps[0].y) || (ps[1] ? hit(ps[1].y) : null);
-    if (!key) { g = null; return; }
-    const mid = ps.length > 1 ? { x:(ps[0].x + ps[1].x) / 2, y:(ps[0].y + ps[1].y) / 2 } : ps[0];
-    const dist = ps.length > 1 ? Math.hypot(ps[0].x - ps[1].x, ps[0].y - ps[1].y) : 0;
-    g = { key, mid, dist, n: ps.length, t: Object.assign({}, TR[key]) };
-  };
-
-  frame.addEventListener("pointerdown", ev => {
-    pts.set(ev.pointerId, ev);
-    snapshot();
-    if (g) { frame.classList.add("drag"); try { frame.setPointerCapture(ev.pointerId); } catch (e) {} }
+  const fr = $("frame"), pts = new Map(); let pinch = null;
+  fr.addEventListener("pointerdown", e => { fr.setPointerCapture(e.pointerId); pts.set(e.pointerId, [e.clientX, e.clientY]); fr.classList.add("drag");
+    if (pts.size === 2) { const [a, b] = [...pts.values()]; pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]), z: state.z }; } });
+  fr.addEventListener("pointermove", e => {
+    if (!pts.has(e.pointerId)) return;
+    const prev = pts.get(e.pointerId); pts.set(e.pointerId, [e.clientX, e.clientY]);
+    if (pts.size === 2 && pinch) { const [a, b] = [...pts.values()]; setZoom(pinch.z * Math.hypot(a[0] - b[0], a[1] - b[1]) / pinch.d); return; }
+    if (pts.size === 1) { state.x += (e.clientX - prev[0]) / fit.k; state.y += (e.clientY - prev[1]) / fit.k; clampPos(); render(); }
   });
-
-  frame.addEventListener("pointermove", ev => {
-    if (!pts.has(ev.pointerId)) return;
-    pts.set(ev.pointerId, ev);
-    if (!g) return;
-    ev.preventDefault();
-    const gz = geo();
-    const ps = [...pts.values()].map(p => toCover(p, gz));
-    const mid = ps.length > 1 ? { x:(ps[0].x + ps[1].x) / 2, y:(ps[0].y + ps[1].y) / 2 } : ps[0];
-    const dist = ps.length > 1 ? Math.hypot(ps[0].x - ps[1].x, ps[0].y - ps[1].y) : 0;
-    const b = BOXES[g.key], t = TR[g.key];
-    if (!b) return;
-
-    /* iki parmak: mesafe oranı kadar yakınlaştır, parmakların ortasındaki nokta yerinde kalsın */
-    let z = g.t.z;
-    if (g.n > 1 && g.dist > 8 && dist > 8) z = clamp(g.t.z * (dist / g.dist), 1, 4);
-    const bcx = b.left + b.w / 2, bcy = b.top + b.h / 2;
-    let x = g.t.x + (g.t.z - z) * (g.mid.x - bcx) / b.w * 100;
-    let y = g.t.y + (g.t.z - z) * (g.mid.y - bcy) / b.h * 100;
-    /* kaydırma: parmağın gittiği kadar (ölçek öncesi öteleme olduğu için z'ye bölünmez) */
-    x += (mid.x - g.mid.x) / b.w * 100;
-    y += (mid.y - g.mid.y) / b.h * 100;
-    const lim = Math.max(50, (z - 1) * 60);
-    t.z = z;
-    t.x = clamp(x, -lim, lim);
-    t.y = clamp(y, -lim, lim);
-    syncTset(g.key);
-    render();
-  });
-
-  const drop = ev => {
-    pts.delete(ev.pointerId);
-    if (!pts.size) { g = null; frame.classList.remove("drag"); }
-    else snapshot();
-  };
-  frame.addEventListener("pointerup", drop);
-  frame.addEventListener("pointercancel", drop);
-
-  /* masaüstü: fare tekerleği / trackpad pinch */
-  frame.addEventListener("wheel", ev => {
-    const gz = geo(), p = toCover(ev, gz), key = hit(p.y);
-    if (!key || !BOXES[key]) return;
-    ev.preventDefault();
-    const b = BOXES[key], t = TR[key];
-    const z0 = t.z, z = clamp(z0 * (1 - ev.deltaY / 400), 1, 4);
-    const bcx = b.left + b.w / 2, bcy = b.top + b.h / 2;
-    const lim = Math.max(50, (z - 1) * 60);
-    t.z = z;
-    t.x = clamp(t.x + (z0 - z) * (p.x - bcx) / b.w * 100, -lim, lim);
-    t.y = clamp(t.y + (z0 - z) * (p.y - bcy) / b.h * 100, -lim, lim);
-    syncTset(key);
-    render();
-  }, { passive: false });
+  const up = e => { pts.delete(e.pointerId); if (pts.size < 2) pinch = null; if (!pts.size) fr.classList.remove("drag"); };
+  fr.addEventListener("pointerup", up); fr.addEventListener("pointercancel", up);
+  fr.addEventListener("wheel", e => { e.preventDefault(); setZoom(state.z * (1 - e.deltaY / 400)); }, { passive: false });
 })();
 
-/* ---------------- PNG üretimi: tamamı canvas ile çizilir ----------------
-   HTML→PNG dönüştürücüsü kullanılmıyordu artık: gömülü görselleri atlıyor,
-   fontları gömemeyince serif'e düşüp yazıları taşırıyordu. Aynı geometri,
-   aynı ölçüm kaynağı (measure) → indirilen PNG önizlemenin birebir aynısı. */
-const loadImg = src => new Promise((res, rej) => {
-  const im = new Image();
-  im.onload = () => res(im);
-  im.onerror = rej;
-  im.src = src;
-});
+["baslik", "dark"].forEach(id => $(id).addEventListener("input", render));
+sel.addEventListener("change", render);
+$("kil").addEventListener("change", () => { $("frame").classList.toggle("guides", $("kil").checked); persist(); });
 
-async function paintLayer(cx, key, src, fitMode, alpha) {
-  const b = BOXES[key]; if (!b) return;
-  const im = await loadImg(src);
-  const iw = im.naturalWidth, ih = im.naturalHeight; if (!iw || !ih) return;
-  const t = TR[key] || { z:1, x:0, y:0 };
-  const s0 = fitMode === "contain" ? Math.min(b.w / iw, b.h / ih) : Math.max(b.w / iw, b.h / ih);
-  const dw = iw * s0 * t.z, dh = ih * s0 * t.z;
-  const ccx = b.left + b.w / 2 + t.x / 100 * b.w;
-  const ccy = b.top + b.h / 2 + t.y / 100 * b.h;
-  cx.save();
-  cx.beginPath(); cx.rect(b.left, b.top, b.w, b.h); cx.clip();
-  cx.globalAlpha = alpha == null ? 1 : alpha;
-  cx.drawImage(im, ccx - dw / 2, ccy - dh / 2, dw, dh);
-  cx.restore();
-}
-
-const setFont = (cx, family, weight, size, lsEm) => {
-  cx.font = weight + " " + size + "px " + family + ", sans-serif";
-  if ("letterSpacing" in cx) cx.letterSpacing = ((lsEm || 0) * size).toFixed(2) + "px";
-};
-const shadowOn = (cx, blur, oy, color) => { cx.shadowColor = color; cx.shadowBlur = blur; cx.shadowOffsetY = oy; };
-const shadowOff = cx => { cx.shadowColor = "transparent"; cx.shadowBlur = 0; cx.shadowOffsetY = 0; };
-const vgrad = (cx, G, stops) => {
-  const gr = cx.createLinearGradient(0, 0, 0, G.h);
-  stops.forEach(st => gr.addColorStop(st[0], st[1]));
-  return gr;
-};
-const roundRect = (cx, x, y, w, h, r) => {
-  cx.beginPath();
-  cx.moveTo(x + r, y);
-  cx.arcTo(x + w, y, x + w, y + h, r);
-  cx.arcTo(x + w, y + h, x, y + h, r);
-  cx.arcTo(x, y + h, x, y, r);
-  cx.arcTo(x, y, x + w, y, r);
-  cx.closePath();
-};
-
-async function paintCover(cx, G, p, d) {
-  const low = s => String(s).toLocaleLowerCase("tr");
-  cx.textAlign = "left"; cx.textBaseline = "alphabetic";
-  cx.fillStyle = p.panel; cx.fillRect(0, 0, G.w, G.h);
-
-  const brackets_ = () => {
-    cx.fillStyle = "rgba(255,255,255,.85)";
-    const arm = 372 * (G.w / 1080), leg = 186 * (G.h / 1920);
-    cx.fillRect(68, G.brTop, arm, 3);
-    cx.fillRect(68, G.brTop, 3, leg);
-    cx.fillRect(G.w - 68 - arm, G.h - G.brBottom - 3, arm, 3);
-    cx.fillRect(G.w - 68 - 3, G.h - G.brBottom - leg, 3, leg);
-  };
-
-  const logo_ = async () => {
-    try {
-      const lg = await loadImg(LOGO);
-      const lw = G.logo * (lg.naturalWidth / lg.naturalHeight);
-      cx.drawImage(lg, G.w - G.side - lw, G.headerTop, lw, G.logo);
-    } catch (e) {}
-  };
-
-  const handle_ = weight => {
-    setFont(cx, "Montserrat", weight, 28, .16);
-    cx.fillStyle = "rgba(255,255,255,.8)";
-    cx.fillText(d.hesap || "@metrekareplus", G.side, G.h - G.handleBottom - 7);
-  };
-
-  const title_ = (dd, box, opts) => {
-    const t = layoutTitle(box, dd.baslik, dd.vurgu, opts);
-    if (!t.lines.length) return;
-    const H = t.lines.length * t.size * LH;
-    const top = (G.h - box.bottom) - H;
-    setFont(cx, opts.family, opts.weight, t.size, 0);
-    const phrase = (dd.vurgu || "").trim();
-    t.lines.forEach((line, i) => {
-      const baseY = top + i * t.size * LH + t.size * 0.94;
-      let x = box.left;
-      const seg = (txt, on) => {
-        if (!txt) return;
-        const u = UP(txt);
-        cx.fillStyle = on ? p.accent : "#fff";
-        shadowOn(cx, 26, 6, "rgba(0,0,0,.78)");
-        cx.fillText(u, x, baseY);
-        shadowOff(cx);
-        x += cx.measureText(u).width;
-      };
-      const idx = phrase ? low(line).indexOf(low(phrase)) : -1;
-      if (idx >= 0) {
-        seg(line.slice(0, idx), false);
-        seg(line.slice(idx, idx + phrase.length), true);
-        seg(line.slice(idx + phrase.length), false);
-      } else if (phrase && t.accentWords.length) {
-        line.split(/(\s+)/).forEach(part => {
-          seg(part, /\S/.test(part) && t.accentWords.includes(low(part).replace(/[?.,:;!"']/g, "")));
-        });
-      } else seg(line, false);
-    });
-  };
-
-  const guides_ = () => {
-    if (G.safeBottom) {
-      cx.fillStyle = "rgba(255,201,60,.07)";
-      cx.fillRect(0, G.h - G.safeBottom, G.w, G.safeBottom);
-      cx.strokeStyle = "rgba(255,201,60,.75)"; cx.lineWidth = 2; cx.setLineDash([12, 10]);
-      cx.beginPath(); cx.moveTo(0, G.h - G.safeBottom); cx.lineTo(G.w, G.h - G.safeBottom); cx.stroke();
-      cx.setLineDash([]);
-      setFont(cx, "Montserrat", 700, 24, .14);
-      cx.fillStyle = "rgba(255,201,60,.92)";
-      cx.fillText("ALT %20 — PLATFORM ARAYÜZÜ", G.side, G.h - G.safeBottom + 46);
-    }
-    if (G.h > G.w) {
-      [[1.25, "rgba(127,209,255,.85)", "IZGARA 4:5"], [1, "rgba(255,154,139,.9)", "IZGARA 1:1"]].forEach(w => {
-        const hh = Math.round(G.w * w[0]), top = Math.round((G.h - hh) / 2);
-        cx.strokeStyle = w[1]; cx.lineWidth = 2; cx.setLineDash([12, 10]);
-        cx.strokeRect(1, top, G.w - 2, hh); cx.setLineDash([]);
-        setFont(cx, "Montserrat", 700, 22, .14);
-        cx.fillStyle = w[1]; cx.textAlign = "right";
-        cx.fillText(w[2], G.w - G.side, top + 36);
-        cx.textAlign = "left";
-      });
-    }
-  };
-
-  const mont = { family:"Montserrat", weight:900, max:G.titleMax, min:G.titleMin, maxLines:5 };
-  const osw  = { family:"Archivo Black", weight:400, max:G.oswMax, min:G.oswMin, maxLines:5 };
-  const tbox = { w:G.w, left:G.side, right:G.side + 14, bottom:G.titleBottom, height:G.titleH };
-
-  if (d.yerlesim === "gundem") {
-    if (d.harita) {
-      await paintLayer(cx, "harita", d.harita, "cover", 1);
-      cx.fillStyle = vgrad(cx, G, [[0, "rgba(6,14,26,.62)"], [.38, "rgba(6,14,26,.42)"],
-        [.7, "rgba(6,14,26,.74)"], [1, "rgba(6,14,26,.95)"]]);
-      cx.fillRect(0, 0, G.w, G.h);
-    }
-    cx.fillStyle = "rgba(255,255,255,.05)";
-    for (let x = 0; x < G.w; x += 108) cx.fillRect(x, 0, 2, G.h);
-    cx.fillStyle = p.accent; cx.fillRect(0, 0, G.w, 14);
-    brackets_();
-    await logo_();
-    if (d.kicker) {
-      setFont(cx, "Oswald", 300, G.kicker, .14);
-      cx.fillStyle = "rgba(255,255,255,.72)";
-      cx.fillText(UP(d.kicker), G.side + 16, G.h - (G.titleBottom + G.titleH) - G.kicker * 0.22);
-    }
-    title_(d, Object.assign({}, tbox, { left:G.side + 16, right:G.side + 16 }), osw);
-    handle_(400);
-    if (d.kilavuz) guides_();
-    return;
-  }
-
-  if (d.yerlesim === "karsilastirma") {
-    const half = Math.round((G.h - G.safeBottom) / 2);
-    if (d.harita) await paintLayer(cx, "harita", d.harita, "cover", 1);
-    if (d.harita2) await paintLayer(cx, "harita2", d.harita2, "cover", 1);
-    const g1 = cx.createLinearGradient(0, 0, 0, half);
-    [[0, "rgba(6,14,26,.74)"], [.45, "rgba(6,14,26,.3)"], [1, "rgba(6,14,26,.6)"]].forEach(st => g1.addColorStop(st[0], st[1]));
-    cx.fillStyle = g1; cx.fillRect(0, 0, G.w, half);
-    const g2 = cx.createLinearGradient(0, half, 0, half * 2);
-    [[0, "rgba(6,14,26,.6)"], [.45, "rgba(6,14,26,.32)"], [1, "rgba(6,14,26,.92)"]].forEach(st => g2.addColorStop(st[0], st[1]));
-    cx.fillStyle = g2; cx.fillRect(0, half, G.w, half);
-    cx.save();
-    shadowOn(cx, 26, 0, "rgba(0,0,0,.6)");
-    cx.fillStyle = "rgba(255,255,255,.9)"; cx.fillRect(0, half - 2, G.w, 4);
-    shadowOff(cx);
-    cx.restore();
-    cx.fillStyle = p.accent; cx.fillRect(0, half - 2, Math.round(G.w * 0.28), 4);
-    brackets_();
-    await logo_();
-    const ns = Math.round(G.region * 1.18);
-    const side_ = (top, text, color) => {
-      if (!text) return;
-      setFont(cx, "Montserrat", 900, ns, 0);
-      cx.fillStyle = color; cx.textBaseline = "top";
-      shadowOn(cx, 30, 8, "rgba(0,0,0,.85)");
-      cx.fillText(UP(text), G.side, top);
-      shadowOff(cx); cx.textBaseline = "alphabetic";
-    };
-    side_(half - Math.round(ns * 2.5), d.bolge_adi, "#fff");
-    side_(half + Math.round(ns * 1.3), d.bolge2, p.accent);
-    cx.save();
-    shadowOn(cx, 40, 12, "rgba(0,0,0,.6)");
-    cx.fillStyle = p.accent;
-    cx.beginPath(); cx.arc(G.w / 2, half, 55, 0, Math.PI * 2); cx.fill();
-    shadowOff(cx);
-    setFont(cx, "Montserrat", 900, 44, 0);
-    cx.fillStyle = p.panel; cx.textAlign = "center"; cx.textBaseline = "middle";
-    cx.fillText("VS", G.w / 2, half + 2);
-    cx.restore();
-    cx.textAlign = "left"; cx.textBaseline = "alphabetic";
-    const sub = d.alt_baslik || d.baslik;
-    if (sub) title_({ baslik:sub, vurgu:d.vurgu }, Object.assign({}, tbox, { height: Math.round(G.titleH * 0.42) }),
-      { family:"Montserrat", weight:800, max: Math.round(G.titleMax * 0.74), min: Math.round(G.titleMax * 0.54), maxLines:2 });
-    handle_(600);
-    if (d.kilavuz) guides_();
-    return;
-  }
-
-  if (d.harita) await paintLayer(cx, "harita", d.harita, "cover", 1);
-  if (d.maske) await paintLayer(cx, "maske", d.maske, "contain", .68);
-  cx.fillStyle = vgrad(cx, G, [[0, "rgba(6,14,26,.55)"], [.34, "rgba(6,14,26,.28)"],
-    [.68, "rgba(6,14,26,.62)"], [1, "rgba(6,14,26,.93)"]]);
-  cx.fillRect(0, 0, G.w, G.h);
-  brackets_();
-  await logo_();
-
-  if (d.bolge_adi) {
-    setFont(cx, "Montserrat", 800, G.region, .03);
-    cx.save();
-    cx.translate(G.w / 2, 0.47 * G.h + G.region * 0.6);
-    cx.rotate(-6 * Math.PI / 180);
-    cx.textAlign = "center"; cx.textBaseline = "middle";
-    cx.fillStyle = "#fff";
-    shadowOn(cx, 28, 6, "rgba(0,0,0,.85)");
-    cx.fillText(UP(d.bolge_adi), 0, 0);
-    shadowOff(cx);
-    cx.restore();
-    cx.textAlign = "left"; cx.textBaseline = "alphabetic";
-  }
-
-  let tb = tbox;
-  if (d.yerlesim === "liste") {
-    setFont(cx, "Montserrat", 900, 38, .08);
-    const u = UP(d.rozet || "Sıralama");
-    const bw = cx.measureText(u).width + 60, bh = 74;
-    const by = G.h - (G.titleBottom + Math.round(G.titleH * 0.74)) - bh;
-    cx.fillStyle = p.accent; roundRect(cx, G.side, by, bw, bh, 8); cx.fill();
-    cx.fillStyle = p.panel; cx.textBaseline = "middle";
-    cx.fillText(u, G.side + 30, by + bh / 2 + 2);
-    cx.textBaseline = "alphabetic";
-    tb = Object.assign({}, tbox, { height: Math.round(G.titleH * 0.7) });
-  }
-
-  const opts = d.yerlesim === "vurgu"
-    ? Object.assign({}, osw, { max: Math.round(G.oswMax * 1.14), min: Math.round(G.oswMin * 1.1) })
-    : (d.yerlesim === "liste" ? Object.assign({}, mont, { max: Math.round(G.titleMax * 0.91), min: G.titleMin - 4 }) : mont);
-  title_(d, tb, opts);
-  handle_(d.yerlesim === "vurgu" ? 400 : 600);
-  if (d.kilavuz) guides_();
-}
-
+/* PNG indir */
 $("dl").addEventListener("click", async () => {
-  const btn = $("dl"), G = FORMATS[state.format];
-  btn.disabled = true; btn.textContent = "Hazırlanıyor…";
-  const slug = ($("baslik").value || "kapak").toLowerCase()
-    .replace(/[^a-z0-9çğıöşü ]/gi, "").trim().replace(/\s+/g, "-").slice(0, 48) || "kapak";
-  const name = slug + "-" + state.format + ".png";
+  const btn = $("dl"); btn.disabled = true; btn.textContent = "Hazırlanıyor…";
   try {
-    try { await document.fonts.ready; } catch (e) {}
-    const d = collect();
-    const p = PALETTES[d.kategori] || PALETTES.deger;
-    const cv = document.createElement("canvas");
-    cv.width = G.w; cv.height = G.h;
-    const cx = cv.getContext("2d");
-    await paintCover(cx, G, p, d);
-    const flat = await new Promise(res => cv.toBlob(b => res(b), "image/png"));
-    const url = URL.createObjectURL(flat);
-    if (/iP(hone|ad|od)/.test(navigator.userAgent)) {
-      /* iOS: indirme Fotoğraflar'a düşmüyor — görseli tam ekran aç, uzun basıp kaydet */
-      $("saveImg").src = url;
-      $("save").classList.add("on");
+    try { await document.fonts.load('400 100px "Archivo Black"'); await document.fonts.load('800 30px Montserrat'); await document.fonts.ready; } catch (e) {}
+    const out = document.createElement("canvas"); out.width = W; out.height = H;
+    paint(out.getContext("2d"), collect());
+    const blob = await new Promise(res => out.toBlob(res, "image/png"));
+    const url = URL.createObjectURL(blob);
+    const slug = UP($("baslik").value).toLocaleLowerCase("tr").replace(/[^a-z0-9çğıöşü ]/gi, "").trim().replace(/\s+/g, "-").slice(0, 48) || "kapak";
+    if (/iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) {
+      $("saveImg").src = url; $("save").classList.add("on");
     } else {
-      const a = document.createElement("a");
-      a.href = url; a.download = name; a.click();
+      const a = document.createElement("a"); a.href = url; a.download = slug + "-kapak.png"; a.click();
       setTimeout(() => URL.revokeObjectURL(url), 4000);
     }
-  } catch (err) {
-    alert("PNG üretilemedi: " + (err && err.message ? err.message : err));
-  } finally {
-    btn.disabled = false; btn.textContent = "PNG indir";
-  }
+  } catch (err) { alert("PNG üretilemedi: " + (err && err.message ? err.message : err)); }
+  finally { btn.disabled = false; btn.textContent = "PNG indir"; }
 });
-
 $("saveClose").addEventListener("click", () => $("save").classList.remove("on"));
 
-/* alana dışarı dokununca klavye kapanır — "tik"e basmak gerekmez */
+/* klavyeyi dışarı dokununca kapat */
 document.addEventListener("pointerdown", ev => {
   const a = document.activeElement;
-  if (!a || !/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) return;
-  if (ev.target === a) return;
+  if (!a || !/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) || ev.target === a) return;
   if (ev.target.closest && ev.target.closest("input,textarea,select")) return;
   a.blur();
 }, true);
 
-/* ---------------- uygulama kabuğu: çevrimdışı + ana ekrana ekleme ---------------- */
+/* uygulama kabuğu */
 if ("serviceWorker" in navigator && location.protocol === "https:") {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js", { scope: "./" }).then(r => {
-      /* yeni sürüm bulunursa hemen devralıp bir kez yenile */
-      r.addEventListener("updatefound", () => {});
-      r.update().catch(() => {});
-    }).catch(() => {});
-    let refreshed = false;
-    navigator.serviceWorker.addEventListener("controllerchange", () => {
-      if (refreshed) return;
-      refreshed = true;
-      location.reload();
-    });
+    navigator.serviceWorker.register("./sw.js", { scope: "./" }).then(r => r.update().catch(() => {})).catch(() => {});
+    let done = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => { if (!done) { done = true; location.reload(); } });
   });
 }
-
 (() => {
   const ios = /iP(hone|ad|od)/.test(navigator.userAgent);
-  const standalone = navigator.standalone === true
-    || matchMedia("(display-mode: standalone)").matches;
-  if (standalone) document.documentElement.dataset.app = "1";
-  let dismissed = false;
-  try { dismissed = localStorage.getItem("mkp_a2hs") === "1"; } catch (e) {}
-  if (ios && !standalone && !dismissed) $("a2hs").classList.add("on");
-  $("a2hsClose").addEventListener("click", () => {
-    $("a2hs").classList.remove("on");
-    try { localStorage.setItem("mkp_a2hs", "1"); } catch (e) {}
-  });
+  const standalone = navigator.standalone === true || matchMedia("(display-mode: standalone)").matches;
+  let dis = false; try { dis = localStorage.getItem("mkp_a2hs") === "1"; } catch (e) {}
+  if (ios && !standalone && !dis) $("a2hs").classList.add("on");
+  $("a2hsClose").addEventListener("click", () => { $("a2hs").classList.remove("on"); try { localStorage.setItem("mkp_a2hs", "1"); } catch (e) {} });
 })();
 
-document.fonts.ready.then(render);
-new ResizeObserver(fit).observe($("stage"));
 restore();
-Object.keys(TSETS).forEach(syncTset);
+$("frame").classList.toggle("guides", $("kil").checked);
+new ResizeObserver(fit).observe($("stage"));
+fit();
+Promise.all(['400 100px "Archivo Black"', '800 30px Montserrat', '600 28px Montserrat']
+  .map(f => document.fonts.load(f).catch(() => {}))).then(render);
 render();
 </script>
 </body>
